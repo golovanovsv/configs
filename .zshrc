@@ -1,3 +1,8 @@
+setopt APPEND_HISTORY
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_IGNORE_SPACE
+setopt HIST_REDUCE_BLANKS
+
 cdpath=(~ ..)
 fpath=($fpath ~/.zfunc)
 path=(/bin /sbin /usr/bin /usr/sbin /usr/local/bin /usr/local/sbin /usr/local/samba/bin \
@@ -10,6 +15,9 @@ limit stack 8192
 limit core 0
 limit -s
 umask 022
+
+autoload -U compinit
+compinit
 
 ### COLORS ###
 fg_green=$'%{\e[0;32m%}'
@@ -33,13 +41,32 @@ fg_white=$'%{\e[1;37m%}'
 fg_black=$'%{\e[0;30m%}'
 
 # System prompt setup
-PROMPT="${fg_light_cyan}[${fg_light_green}%n${fg_light_cyan}:${fg_light_green}%~${fg_light_cyan}]#${fg_no_colour} "
+if [[ `whoami` == "root" ]];
+then
+    PROMPT="${fg_light_cyan}[${fg_light_red}%n${fg_light_cyan}:${fg_light_green}%~${fg_light_cyan}]#${fg_no_colour} "
+else
+    PROMPT="${fg_light_cyan}[${fg_light_green}%n${fg_light_cyan}:${fg_light_green}%~${fg_light_cyan}]#${fg_no_colour} "
+fi
+
+
+[[ -n "${key[Home]}"     ]]  && bindkey  "${key[Home]}"     beginning-of-line
+[[ -n "${key[End]}"      ]]  && bindkey  "${key[End]}"      end-of-line
+[[ -n "${key[Insert]}"   ]]  && bindkey  "${key[Insert]}"   overwrite-mode
+[[ -n "${key[Delete]}"   ]]  && bindkey  "${key[Delete]}"   delete-char
+[[ -n "${key[Up]}"       ]]  && bindkey  "${key[Up]}"       up-line-or-history
+[[ -n "${key[Down]}"     ]]  && bindkey  "${key[Down]}"     down-line-or-history
+[[ -n "${key[Left]}"     ]]  && bindkey  "${key[Left]}"     backward-char
+[[ -n "${key[Right]}"    ]]  && bindkey  "${key[Right]}"    forward-char
+[[ -n "${key[PageUp]}"   ]]  && bindkey  "${key[PageUp]}"   beginning-of-buffer-or-history
+[[ -n "${key[PageDown]}" ]]  && bindkey  "${key[PageDown]}" end-of-buffer-or-history
+
+HISTFILE=~/.zhistory
+SAVEHIST=100
+HISTSIZE=100
 
 # Env path
 export FTP_PASSIVE_MODE=no
-export GREP_OPTIONS='--color=auto'
 export GREP_COLOR='1;33'
-export TERM=xterm
 
 # Aliases defination
 os=`uname`
@@ -53,12 +80,4 @@ if [[ ${os} == "Linux" ]];
 fi
 
 alias su="su -m"
-alias ee="mcedit"
-alias en="su -m"
-
-case $TERM in                                                                                                                       
-    xterm*)                                                                                                                         
-            precmd () {print -Pn "\e]0;%n@%M\a"}
-	    #print -Pn "%n@%M"                                                                                
-	    ;;                                                                                                                              
-esac
+alias grep="grep --color=auto"
