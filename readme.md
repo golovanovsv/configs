@@ -5,5 +5,5 @@ curl https://raw.githubusercontent.com/golovanovsv/configs/master/golovanovsv.pu
 
 ## Настройка zsh
 ```sh
-https://raw.githubusercontent.com/golovanovsv/configs/master/.zshrc > ~/.zshrc
+curl https://raw.githubusercontent.com/golovanovsv/configs/master/.zshrc > ~/.zshrc
 ```
