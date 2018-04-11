@@ -22,7 +22,7 @@ setopt AUTOCD
 
 # Установка переменных среды
 export FTP_PASSIVE_MODE=no
-export GREP_COLOR=${fg_bold[yellow]}
+export GREP_COLOR="01;33"
 
 if [[ ${os} == "Linux" ]]; then
     export LS_COLORS="di=36:ln=35:ex=31:pi=33:so=32"
