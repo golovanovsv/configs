@@ -68,6 +68,8 @@ HISTFILE=~/.zhistory
 SAVEHIST=100
 HISTSIZE=100
 
+CEPH_CLUSTER="xvers"
+
 # Настройка приглашений
 # Общая часть
 user_part="undef"
@@ -100,6 +102,11 @@ PROMPT="${fg_light_cyan}[${user_part}${fg_light_cyan}:${fg_light_green}%~${fg_li
 alias su="su -m"
 alias grep="grep --color=auto"
 
+if [[ -n "$CEPH_CLUSTER" ]]; then
+    alias rbd="rbd --cluster $CEPH_CLUSTER"
+    alias ceph="ceph --cluster $CEPH_CLUSTER"
+fi
+
 if [[ ${os} == "Linux" ]]; then
     alias ls="ls --color"
 elif [[ ${os} == "FreeBSD" ]]; then
@@ -113,5 +120,11 @@ print -Pn "\e]2;%n@%M\a"
 print -Pn "\e]1;%n@%M\a"
 
 # Экзотические автодополнения
+ceph_args=(health auth osd crush pg df list ls lspools dump add in rm del out get set export get-or-create get-or-create-key caps print-key import detail pool init )
+compctl -k ceph_args ceph
+
+rbd_args=(pool snap mirror init create ls info trash purge resize rm mv restore rollback protect unprotect clone enable disable peer add remove image resync image status)
+compctl -l rbd_args rbd
+
 appsh_args=(stop start reload)
 compctl -k appsh_args app.sh
