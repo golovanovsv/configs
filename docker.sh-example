@@ -1,0 +1,31 @@
+# Запуск контейнера
+
+docker run -d \
+  --name  \
+  --hostname \
+  -v  \
+  -p  \
+  -p  \
+  --env "ENV1=/tmp, ENV2=/sys" \
+  --memory 1024m \
+  --log-driver syslog \
+  --log-opt syslog-address=udp://.46:514 \
+  --log-opt syslog-format=rfc3164 \
+  --log-opt tag= \
+image
+
+# Опцции доступа к хостовым процессам/сетям
+
+docker run -d \
+  --name  \
+  --hostname \
+  -v  \
+  -p  \
+  -p  \
+  --pid host \
+  --network host \
+  --log-driver syslog \
+  --log-opt syslog-address=udp://.46:514 \
+  --log-opt syslog-format=rfc3164 \
+  --log-opt tag= \
+image
