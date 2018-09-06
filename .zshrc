@@ -99,7 +99,11 @@ git_prompt() {
 
 # Собираем служебную часть приглашения
 supp_part='$(git_prompt)'
-PROMPT="${fg_light_cyan}[${user_part}${fg_light_cyan}:${fg_light_green}%~${fg_light_cyan}]${supp_part}${eop_part}"
+if [[ -f /usr/bin/git ]]; then
+    PROMPT="${fg_light_cyan}[${user_part}${fg_light_cyan}:${fg_light_green}%~${fg_light_cyan}]${supp_part}${eop_part}"
+elif
+    PROMPT="${fg_light_cyan}[${user_part}${fg_light_cyan}:${fg_light_green}%~${fg_light_cyan}]${eop_part}"
+fi
 
 
 # Настройка альясов
