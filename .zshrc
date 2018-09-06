@@ -85,10 +85,14 @@ fi
 git_prompt() {
     ret=""
     branch=`git symbolic-ref HEAD 2>/dev/null | cut -d / -f 3`
-    if [[ $branch == "master" ]]; then
+    if [[ $branch == "" ]]; then
+        rep=""
+    elif [[ $branch == "master" ]]; then
         ret="[${fg_light_red}${branch}${fg_light_cyan}]"
     elif [[ $branch == "develop" ]]; then
         ret="[${fg_light_yellow}${branch}${fg_light_cyan}]"
+    else
+        ret="[${fg_light_green}${branch}${fg_light_cyan}]"
     fi
     echo ${ret}
 }
@@ -101,6 +105,10 @@ PROMPT="${fg_light_cyan}[${user_part}${fg_light_cyan}:${fg_light_green}%~${fg_li
 # Настройка альясов
 alias su="su -m"
 alias grep="grep --color=auto"
+
+if [[ -f /usr/bin/bat ]]; then
+    alias cat="/usr/bin/bat -n"
+fi
 
 if [[ -n "$CEPH_CLUSTER" ]]; then
     alias rbd="rbd --cluster $CEPH_CLUSTER"
