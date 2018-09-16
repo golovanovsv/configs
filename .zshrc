@@ -101,7 +101,7 @@ git_prompt() {
 supp_part='$(git_prompt)'
 if [[ -f /usr/bin/git ]]; then
     PROMPT="${fg_light_cyan}[${user_part}${fg_light_cyan}:${fg_light_green}%~${fg_light_cyan}]${supp_part}${eop_part}"
-elif
+else
     PROMPT="${fg_light_cyan}[${user_part}${fg_light_cyan}:${fg_light_green}%~${fg_light_cyan}]${eop_part}"
 fi
 
