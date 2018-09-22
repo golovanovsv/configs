@@ -128,8 +128,10 @@ else
 fi
 
 # Заголовки для терминала
-print -Pn "\e]2;%n@%M\a"
-print -Pn "\e]1;%n@%M\a"
+precmd() {
+    print -Pn "\e]2;%n@%M\a"
+    print -Pn "\e]1;%n@%M\a"
+}
 
 # Экзотические автодополнения
 ceph_args=(health auth osd crush pg df list ls lspools dump add in rm del out get set export get-or-create get-or-create-key caps print-key import detail pool init )
