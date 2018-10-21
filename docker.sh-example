@@ -29,3 +29,14 @@ docker run -d \
   --log-opt syslog-format=rfc3164 \
   --log-opt tag= \
 image
+
+# Быстрый запуск ssl в nginx
+docker run --rm \
+    --name nginx \
+    --hostname example.com \
+	-p 80:80 \
+	-p 443:443 \
+	-v /home/reptile/nginx/ssl.conf:/etc/nginx/conf.d/example.com.conf \
+	-v /home/reptile/nginx/x0.itmh.io.pem:/etc/nginx/conf.d/example.com.pem \
+	-v /home/reptile/nginx/x0.itmh.io.key:/etc/nginx/conf.d/example.com.key \
+nginx
