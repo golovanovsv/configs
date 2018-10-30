@@ -1,0 +1,22 @@
+# /etc/systemd/network
+[Match]
+Name=ens192
+
+[Network]
+DHCP=no
+IPv6AcceptRouterAdvertisements=false
+IPv6PrivacyExtensions=no
+
+Address=:101::2/24
+Gateway=:101::1
+
+Address=x.x.x.10/30
+Gateway=x.x.x.9
+
+[Route]
+Destination=:8100::/40
+Gateway=:8110:101::1
+
+[Route]
+Destination=x.x.0.0/12
+Gateway=x.x.0.9
