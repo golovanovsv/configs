@@ -133,9 +133,11 @@ precmd() {
     print -Pn "\e]1;%n@%M\a"
 }
 
-# Экзотические автодополнения
+## Экзотические автодополнения
 if [[ -f /usr/local/bin/kubectl ]]; then
     source <(/usr/local/bin/kubectl completion zsh);
+    # Игнорируем часть команд в автодополнении
+    zstyle ':completion:*' ignored-patterns 'kubelet|kubernetes-scripts';
 fi
 
 ceph_args=(health auth osd crush pg df list ls lspools dump add in rm del out get set export get-or-create get-or-create-key caps print-key import detail pool init )
