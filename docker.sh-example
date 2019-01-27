@@ -1,27 +1,26 @@
 # Запуск контейнера
-
 docker run -d \
-  --name  \
-  --hostname \
-  -v  \
-  -p  \
-  -p  \
+  --name nginx \
+  --hostname nginx0 \
+  -v  /etc/nginx:/etc/nginx \
+  -p  80:80 \
+  -p  443:443 \
   --env "ENV1=/tmp, ENV2=/sys" \
   --memory 1024m \
+  --add-host=postgres:192.168.1.24 \
   --log-driver syslog \
   --log-opt syslog-address=udp://.46:514 \
   --log-opt syslog-format=rfc3164 \
   --log-opt tag= \
-image
+nginx
 
 # Опцции доступа к хостовым процессам/сетям
-
 docker run -d \
-  --name  \
-  --hostname \
-  -v  \
-  -p  \
-  -p  \
+  --name nginx \
+  --hostname nhinx0 \
+  -v  /etc/nginx:/etc/nginx \
+  -p  80:80 \
+  -p  443:443 \
   --pid host \
   --network host \
   --log-driver syslog \
