@@ -120,11 +120,11 @@ if [[ -n "$CEPH_CLUSTER" ]]; then
 fi
 
 if [[ ${os} == "Linux" ]]; then
-    alias ls="ls --color"
+    alias ls="ls -allh --color"
 elif [[ ${os} == "FreeBSD" ]]; then
-	alias ls="ls -G"
+	alias ls="ls -allh -G"
 else
-	alias ls="ls"
+	alias ls="ls -allh"
 fi
 
 # Заголовки для терминала
@@ -134,10 +134,10 @@ precmd() {
 }
 
 ## Экзотические автодополнения
-if [[ -f /usr/local/bin/kubectl ]]; then
-    source <(/usr/local/bin/kubectl completion zsh);
+if [[ -f /usr/local/bin/kubectl || -f /usr/bin/kubectl ]]; then
+    source <(kubectl completion zsh);
     # Игнорируем часть команд в автодополнении
-    zstyle ':completion:*' ignored-patterns 'kubelet|kubernetes-scripts';
+    zstyle ':completion:*' ignored-patterns 'kubeadm|kubelet|kubernetes-scripts';
 fi
 
 ceph_args=(health auth osd crush pg df list ls lspools dump add in rm del out get set export get-or-create get-or-create-key caps print-key import detail pool init )
