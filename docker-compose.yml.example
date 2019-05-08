@@ -1,0 +1,106 @@
+version: "3"
+services:
+  nginx-proxy:
+    image: golovanovsv/nginx-le
+    container_name: nginx-proxy
+    hostname: nginx-proxy
+    restart: unless-stopped
+    network_mode: "host"
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - atlassian
+      - exporters
+    volumes:
+      - ./conf.d:/etc/nginx/conf.d
+      - /var/log/nginx:/var/log/nginx
+    environment:
+      - "LETSENCYPT=true"
+      - "LE_FQDN=wiki.i-retail.com"
+      - "LE_EMAIL=sg@fevlake.com"
+    logging:
+      driver: json-file
+      options:
+        max-file: '5'
+        max-size: 10m
+
+  postgres:
+    image: postgres:9.6
+    container_name: postgres
+    hostname: postgres
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5432:5432"
+    networks:
+      - atlassian
+    volumes:
+      - "/data/postgres:/var/lib/postgresql/data"
+    environment:
+      - "POSTGRES_PASSWORD=R9vp252PssD7Ux"
+    logging:
+      driver: json-file
+      options:
+        max-file: '5'
+        max-size: 10m
+
+  node-exporter:
+    image: quay.io/prometheus/node-exporter
+    container_name: node-exporter
+    hostname: node-exporter
+    restart: unless-stopped
+    ports:
+      - "9100:9100"
+    networks:
+      - exporters
+    volumes:
+      - "/:/host:ro,rslave"
+    command: "--path.rootfs /host"
+    logging:
+      driver: json-file
+      options:
+        max-file: '5'
+        max-size: 10m
+
+  postgres-exporter:
+    image: wrouesnel/postgres_exporter
+    container_name: postgres-exporter
+    hostname: postgres-exporter
+    restart: unless-stopped
+    ports:
+      - "9187:9187"
+    networks:
+      - atlassian
+    environment:
+      - "DATA_SOURCE_NAME="
+    logging:
+      driver: json-file
+      options:
+        max-file: '5'
+        max-size: 10m
+
+  cadvisor:
+    image: google/cadvisor
+    container_name: cadvisor
+    hostname: cadvisor
+    restart: unless-stopped
+    ports:
+      - "8088:8080"
+    networks:
+      - exporters
+    volumes:
+      - "/:/rootfs:ro"
+      - "/var/run:/var/run:ro"
+      - "/sys:/sys:ro"
+      - "/var/lib/docker/:/var/lib/docker:ro"
+      - "/dev/disk/:/dev/disk:ro"
+    logging:
+      driver: json-file
+      options:
+        max-file: '5'
+        max-size: 10m
+
+networks:
+  atlassian:
+  exporters:
+  
