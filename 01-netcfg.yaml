@@ -1,0 +1,43 @@
+# /etc/netplan/
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    eno1:
+      addresses:
+        - 8.8.8.8/32
+        - 2a02:4f8:21a:cf69::2/64
+      routes:
+        - on-link: true
+          to: 0.0.0.0/0
+          via: 8.8.8.1
+      gateway: 8.8.8.1
+      gateway6: fe80::1
+      nameservers:
+        addresses:
+          - 213.133.100.100
+          - 213.133.99.99
+          - 213.133.98.98
+          - 2a01:4f8:0:1::add:9999
+          - 2a01:4f8:0:1::add:9898
+          - 2a01:4f8:0:1::add:1010
+    vlan10:
+      id: 10
+      link: eno1
+      dhcp4: no
+      addresses:
+        - 10.0.0.2/24
+      routes:
+        - to: 192.168.0.0/24
+          via: 10.0.0.1
+          on-link: true
+
+    bonds:
+      bond0:
+        dhcp4: no
+        interfaces:
+          - eno2
+          - eno3
+        parameters:
+          mode: 802.3ad
+          mii-monitor-interval: 1
