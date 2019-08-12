@@ -32,7 +32,7 @@ network:
     vlan10:
       id: 10
       link: eno1
-      dhcp4: no
+      dhcp4: false
       addresses:
         - 10.0.0.2/24
       routes:
@@ -42,7 +42,7 @@ network:
 
   bridges:
     br0:
-      dhcp4: no
+      dhcp4: false
       addresses: [ 10.3.99.25/24 ]
       interfaces:
         - eno1
@@ -50,7 +50,7 @@ network:
 
   bonds:
     bond0:
-      dhcp4: no
+      dhcp4: false
       interfaces:
         - eno2
         - eno3
@@ -69,14 +69,16 @@ network:
 
   wifis:
     wlp2s0b1:
-      dhcp4: yes
-      dhcp6: yes
+      dhcp4: true
+      dhcp6: true
+      ipv6-privacy: false
       access-points:
         "network_ssid_name":
           password: "**********"
     wl0:
-      dhcp4: yes
-      dhcp6: yes
+      dhcp4: true
+      dhcp6: true
+      ipv6-privacy: true
       access-points:
         workplace:
           auth:
