@@ -84,7 +84,7 @@ fi
 # Часть для работы с репозиториями
 git_prompt() {
     ret=""
-    branch=`git symbolic-ref HEAD 2>/dev/null | cut -d / -f 3`
+    branch=`git symbolic-ref HEAD 2>/dev/null | sed 's/refs\/heads\///g'`
     if [[ $branch == "" ]]; then
         rep=""
     elif [[ $branch == "master" ]]; then
