@@ -1,0 +1,36 @@
+# Reference - https://docs.traefik.io/reference/static-configuration/file/
+
+log:
+  level: DEBUG
+  filePath: /dev/stdout
+  format: common
+
+accessLog:
+  filePath: /dev/stdout
+  format: common
+
+entryPoints:
+  web:
+    address: ':80'
+  web-secure:
+    address: ':443'
+
+api:
+  dashboard: true
+
+providers:
+  docker:
+    endpoint: "unix:///var/run/docker.sock"
+    exposedByDefault: false
+  file:
+    directory: /etc/traefik
+    filename: dynamic.yml
+    watch: true
+
+certificatesResolvers:
+  httpChallenge:
+    acme:
+      email: golovanovsv@gmail.com
+      storage: acme.json
+      httpChallenge:
+        entryPoint: web

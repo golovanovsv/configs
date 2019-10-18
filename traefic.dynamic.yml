@@ -1,0 +1,30 @@
+# Reference - https://docs.traefik.io/reference/dynamic-configuration/file/
+
+http:
+  routers:
+    api-insecure:
+      rule: Host(`one.example.com`)
+      entrypoints:
+        - web
+      service: api@internal
+      middlewares:
+        - https-redirect
+    api:
+      rule: Host(`one.example.com`)
+      entrypoints:
+        - web-secure
+      service: api@internal
+      middlewares:
+        - auth
+      tls:
+        certResolver: httpChallenge
+        domains:
+          - main: "one.example.com"
+  middlewares:
+    auth:
+      basicAuth:
+        users:
+          - "golovanovsv:$apr1$KZiPyBLc$hGhiyG.RFTllkxUn7l5Hk/"
+    https-redirect:
+      redirectScheme:
+        scheme: https
