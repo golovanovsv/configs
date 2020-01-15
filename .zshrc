@@ -140,6 +140,10 @@ if [[ -f /usr/local/bin/kubectl || -f /usr/bin/kubectl ]]; then
     zstyle ':completion:*' ignored-patterns 'kubeadm|kubelet|kubernetes-scripts';
 fi
 
+if [[ -f /usr/local/bin/helm || -f /usr/bin/helm ]]; then
+    source <(helm completion zsh)
+fi
+
 ceph_args=(health auth osd crush pg df list ls lspools dump add in rm del out get set export get-or-create get-or-create-key caps print-key import detail pool init )
 compctl -k ceph_args ceph
 
