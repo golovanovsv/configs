@@ -6,7 +6,7 @@ openssl req -x509 -new -nodes -key ca.key -sha256 -subj "/CN=kube-ca" -days 3650
 
 openssl genrsa -out kube-apiserver.key 2048
 openssl req -new -key kube-apiserver.key -out kube-apiserver.csr -config file.cnf
-openssl x509 -req -in kube-apiserver.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out kube-apiserver.crt -days 1825 -extensions v3_ext -extfile file.cnf
+openssl x509 -req -CA ca.crt -CAkey ca.key -CAcreateserial -in kube-apiserver.csr -out kube-apiserver.crt -days 1825 -extensions v3_ext -extfile file.cnf
 
 ```bash
 [ req ]
