@@ -2,7 +2,7 @@
 
 openssl genrsa -des3 -out ca.key 2048
 $ password
-openssl req -x509 -new -nodes -key ca.key -sha256 -subj "/CN=kube-ca" -days 3650 -out ca.crt 
+openssl req -x509 -new -nodes -key ca.key -sha256 -subj "/CN=kube-ca" -days 3650 -out ca.crt
 
 openssl genrsa -out kube-apiserver.key 2048
 openssl req -new -key kube-apiserver.key -out kube-apiserver.csr -config file.cnf
@@ -45,9 +45,32 @@ subjectAltName=@alt_names
 ```
 
 ## CreateUsers
+
 openssl genrsa -out service-account.key 2048
-openssl req -new -key service-account.key -out service-account.csr -subj "/CN=kube-admin"
+openssl req -new -key service-account.key -out service-account.csr -subj "/CN=<user-name>/O=<user-group>"
+# users:
+# - kubernetes-admin [/CN=kubernetes-admin/O=system:masters]
+# - system:kube-scheduler [/CN=system:kube-scheduler]
+# - system:kube-controller-manager [/CN=system:kube-controller-manager]
+# groups:
+# - system:masters
+
 openssl x509 -req -in service-account.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out service-account.crt -days 1825 -extensions v3_ext -extfile kube-apiserver.cnf
 
 openssl rsa -in key.crt -pubout > key.pub
 openssl rsa -in key.crt -pubout -out key.pub
+
+kubectl --kubeconfig admin.conf config set-cluster zaddr --server="https://172.16.121.13:6443" --certificate-authority="/etc/kubernetes/pki/ca.crt" --embed-certs=true
+kubectl --kubeconfig admin.conf config set-credentials kubernetes-admin --client-key="/etc/kubernetes/pki/kube-scheduller.key" --client-certificate="/etc/kubernetes/pki/kube-scheduller.crt" --embed-certs=true
+kubectl config --kubeconfig admin.conf set-context zaddr --cluster=zaddr --user=kubernetes-admin
+kubectl config --kubeconfig admin.conf use-context zaddr
+
+kubectl --kubeconfig scheduller.conf config set-cluster zaddr --server="https://172.16.121.13:6443" --certificate-authority="/etc/kubernetes/pki/ca.crt" --embed-certs=true
+kubectl --kubeconfig scheduller.conf config set-credentials "system:kube-scheduler" --client-key="/etc/kubernetes/pki/kube-scheduller.key" --client-certificate="/etc/kubernetes/pki/kube-scheduller.crt" --embed-certs=true
+kubectl config --kubeconfig scheduller.conf set-context zaddr --cluster=zaddr --user="system:kube-scheduler"
+kubectl config --kubeconfig scheduller.conf use-context zaddr
+
+kubectl --kubeconfig controller-manager.conf config set-cluster zaddr --server="https://172.16.121.13:6443" --certificate-authority="/etc/kubernetes/pki/ca.crt" --embed-certs=true
+kubectl --kubeconfig controller-manager.conf config set-credentials "system:kube-controller-manager" --client-key="/etc/kubernetes/pki/kube-scheduller.key" --client-certificate="/etc/kubernetes/pki/kube-scheduller.crt" --embed-certs=true
+kubectl config --kubeconfig controller-manager.conf set-context zaddr --cluster=zaddr --user="system:kube-controller-manager"
+kubectl config --kubeconfig controller-manager.conf use-context zaddr
