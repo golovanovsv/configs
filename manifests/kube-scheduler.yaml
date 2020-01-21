@@ -42,4 +42,3 @@ spec:
       path: /etc/kubernetes/scheduler.conf
       type: FileOrCreate
     name: kubeconfig
-status: {}
