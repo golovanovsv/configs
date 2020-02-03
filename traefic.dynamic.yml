@@ -20,6 +20,12 @@ http:
         certResolver: httpChallenge
         domains:
           - main: "one.example.com"
+    proxy:
+      rule: Host(`*`)
+      entrypoints:
+        - web
+        - web-secure
+      service: service1
   middlewares:
     auth:
       basicAuth:
@@ -28,3 +34,45 @@ http:
     https-redirect:
       redirectScheme:
         scheme: https
+  services:
+    svcBalancer:
+      weighted:
+        services:
+        - name: service1
+          weight: 3
+        - name: service2
+          weight: 1
+    svcMirror:
+      mirroring:
+        service: service1
+        mirrors:
+        - name: service2
+          percent: 10
+    service1:
+      loadBalancer:
+        passHostHeader: true
+        servers:
+        - address: "ip1:port1"
+        - address: "ip2:port2"
+        healthCheck:
+          path: /healthz
+          interval: "10s"
+          timeout: "3s"
+          port: "8080"
+          scheme: "http"
+          headers:
+            X-Custom-Header-1: "data1"
+            X-Custom-Header-2: "data2"
+    service2:
+      loadBalancer:
+        servers:
+        - url: "https://ip1:port1"
+        - url: "https://ip2:port2"
+
+tcp:
+  services:
+    tor:
+      loadBalancer:
+        servers:
+        - address: "ip1:port1"
+        - address: "ip2:port2"
