@@ -71,3 +71,15 @@ deb https://apt.kubernetes.io/ kubernetes-xenial main
 EOF
 sudo apt-get update
 sudo apt-get install -y kubelet kubeadm kubectl
+
+# kubelet params
+## Out of resources
+## https://kubernetes.io/docs/tasks/administer-cluster/out-of-resource/
+--eviction-hard=memory.available<500Mi,nodefs.available<1Gi,imagefs.available<,nodefs.inodesFree=5000
+--eviction-hard=memory.available<5%,nodefs.available<5%,imagefs.available<5%
+--eviction-soft=memory.available<1.5Gi
+--eviction-soft-grace-period=2m30s
+--housekeeping-interval=10s
+--system-reserved=memory=1.5G
+
+## Garbage collecting
