@@ -14,8 +14,16 @@ kubectl get endpoints
 kubectl get CSINode
 kubectl get csidrivers
 
+# kubectl systems
 kubectl taint nodes --all node-role.kubernetes.io/master-
-kubectl taint nodeы --all node-role.kubernetes.io/master:NoSchedule-
+kubectl taint nodes --all node-role.kubernetes.io/master:NoSchedule-
+kubectl taint node k0 node-role.kubernetes.io/master='':NoSchedule
+
+kubectl label node k0 node-role.kubernetes.io/ingress=true
+kubectl label node k0 node-role.kubernetes.io/ingress-
+
+kubectl api-versions
+kubectl get cs
 
 # kubeadm
 
