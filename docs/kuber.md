@@ -35,6 +35,8 @@ sudo kubeadm join --pod-network-cidr=10.244.0.0/24
 
 kubeadm join 5.189.0.215:6443 [--control-plane] --token <token> --discovery-token-ca-cert-hash <dtoken>
 
+[config.yaml](https://godoc.org/k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/v1beta2)
+
 # prometheus operator
 
 objects:
@@ -91,3 +93,6 @@ sudo apt-get install -y kubelet kubeadm kubectl
 --system-reserved=memory=1.5G
 
 ## Garbage collecting
+
+## API
+ingress: extensions/v1beta1 >= 1.14 networking.k8s.io/v1beta1
