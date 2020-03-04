@@ -142,3 +142,40 @@ VACUUM (VERBOSE, ANALYZE) "log"."error";
 vacuum full analyze log.error
 vacuum full analyze device.log
 vacuum full analyze deficit.task_data
+
+## Мониторинг
+
+Среднее время отклика = sum(total_time) / sum(calls) [pg_stat_statements]
+Ошибки = sum(xact_rollback) [pg_stat_database]
+Транзакций в секунду = sum(xact_commit + xact_rollback)
+Запросов в секунду = sum(calls)
+
+Состояния клиентов - count(*) where state = '' [pg_stat_activity]
+Длительность запросов - now() - xact_start, now() - query_start
+
+Активность в таблицах - n_tup_ins, n_tup_del, n_tup_upd [pg_stat_user_tables]
+Размеры таблиц - pg_relation_size(), pg_total_relation_size ()
+
+Получение данных о запросах - [pg_stat_statements] :
+ - calls частота
+ - total_time, mean_time длительность
+ - shared_blks_* тяжесть
+ - rows  жадность к строкам
+ - temp_blks_* временные файлы
+ - local_blks_* временные таблицы
+
+Частые сбросы грязных страниц на диск [pg_stat_bgwriter]
+ - checkpoint_req
+ - checkpoint_timed
+
+Процессы autovacuum:
+ - count(*) WHERE query ~'^autovac'
+ - count(*) WHERE now() - xact_start AND query ~'^autovac'
+
+Репликация [pg_stat_replicatiob]:
+postgres9:
+  - pg_xlog_location_diff()
+  - (send|write|flush|replay)_location
+postgres10:
+  - pg_wal_lsn_diff()
+  - (write|flush|replay)_lag
