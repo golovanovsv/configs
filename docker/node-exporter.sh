@@ -4,10 +4,9 @@ docker run -d --name node-exporter \
   --network host \
   --pid host \
   --restart unless-stopped \
-  --volume "/:/host:ro,rslave" \
+  --volume "/:/host:ro" \
   --volume "/usr/share/node-exporter:/usr/share/node-exporter:ro" \
 prom/node-exporter \
-  /bin/node_exporter \
   --web.listen-address=0.0.0.0:9100 \
   --path.rootfs=/host \
   --collector.textfile.directory=/usr/share/node-exporter \

@@ -37,6 +37,12 @@ kubeadm join 5.189.0.215:6443 [--control-plane] --token <token> --discovery-toke
 
 [config.yaml](https://godoc.org/k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/v1beta2)
 
+# kubeadm upgrade
+Обновляться можно только на одну версию. Таким образом необходимо:
+- Установить последний kubeadm следующей версии: `apt policy | grep kubeadm; apt install kubeadm=<new version>`
+- Обновить control plane на каждом мастере: `kubeadm upgrade plan; kubeadm upgrade apply <new version>`
+- Обновить kubelet-ы: `apt install kubelet=<new version>`
+
 # prometheus operator
 
 objects:

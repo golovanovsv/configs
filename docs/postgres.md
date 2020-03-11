@@ -1,6 +1,6 @@
 # postgres
 
-psql -h <host> <db|postgres> <user>
+psql -h <host> -p 5432 -d <db|postgres> -U <user> -W
 pgcli - command line interface for Postgres with auto-completion and syntax
 
 ## Сокращения
