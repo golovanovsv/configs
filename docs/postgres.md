@@ -39,6 +39,9 @@ ALTER USER <user> WITH PASSWORD '<password>';
 ALTER USER <user> WITH superuser createdb createrole replication bypassrls; 
 GRANT ALL PRIVILEGES ON DATABASE <db> TO <user>;
 
+Место хранения информации о пользователях. Схема pg_catalog общая на инстанс.
+SELECT * FROM pg_catalog.pg_authid;
+
 ## Управление правами
 
 GRANT CONNECT ON DATABASE "<db>" TO <user>;

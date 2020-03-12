@@ -8,6 +8,8 @@ kubectl -n <ns> create secret tls <name> --cert <certfile> --key <keyfile> --dry
 kubectl -n <ns> get pod <pod> -o yaml
 kubectl -n <ns> get pod <pod> -o json
 kubectl -n <ns> get pod <pod> -o jsonpath='{.spec.ports[?(@.name=="http")].nodePort}'
+kubectl -n <ns> get pod --sort-by='{.firstTimestamp}'
+kubectl -n <ns> get pod --sort-by=.metadata.creationTimestamp
 
 kubectl get mutatingwebhookconfiguration
 kubectl get endpoints
