@@ -79,6 +79,23 @@ SELECT table_schema, table_name, total_bytes AS total
 WHERE table_schema != 'information_schema' AND table_schema != 'pg_catalog'
 ORDER BY total DESC,table_schema,table_name;
 
+## Репликация
+Заливаем дамп базы с уадленного сервера:
+pg_basebackup -P -R -X stream -c fast -h 78.155.202.229 -U postgres -D ./data
+-P - отображать прогресс
+-R - создать минимальный recovery.conf
+-c - режим контрольных точек
+-X - режим передачи журнала
+
+Создание слота репликации
+SELECT pg_create_physical_replication_slot('<name>'); 
+
+Список существующих слотов репликации
+select * from pg_replication_slots; 
+
+Удаление слота репликации
+select pg_drop_replication_slot('<name>');
+
 ## Состояние репликации
 
 9: select client_addr, state, sent_location, write_location, flush_location, replay_location from pg_stat_replication;
