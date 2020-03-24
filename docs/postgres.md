@@ -56,6 +56,10 @@ ALTER DATABASE <db> OWNER TO reptile;
 
 SELECT * FROM information_schema.role_table_grants WHERE grantee='<user>';
 
+## Перенатройка в онлайне
+
+ALTER SYSTEM SET wal_level = replica;
+
 ## Вычисление объемов
 
 SELECT pg_database.datname as "Database", pg_size_pretty(pg_database_size(pg_database.datname)) as Size FROM pg_database ORDER BY "Database";
