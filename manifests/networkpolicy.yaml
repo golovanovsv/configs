@@ -1,0 +1,65 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPlicy
+metadata:
+  name: <policy name>
+  nemaspace: <policy namespace>
+spec:
+  policyTypes:
+  - Ingress
+  # Пустое {} значение выбирает все поды
+  podSelector:
+    matchLabels:
+      app: nginx
+  ingress:
+  - from:
+    - ipBlock:
+        cidr: 172.16.0.0/16
+        except:
+        - 172.16.121.0/24
+      # Пустое значение {} селектора выбирает все пространства
+    - namespaceSelector:
+        matchLabels:
+          # Объединяется при помощи логического И
+          project: staging
+          namespace: default
+      # Начиная с версии 1.11 можно объединять поды и пространства при помощи логического И
+    - namespaceSelector:
+        matchLabels:
+          project: production
+      podSelector:
+        matchLabels:
+          app: postgres
+    - podSelector:
+        matchLabels:
+          app: pinger
+    ports:
+    - protocol: TCP
+      port: 80
+---
+# Пример deny-all
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: deny-all
+  namespace: default
+spec:
+  # Выбираем все поды
+  # И не определяем откуда можно
+  podSelector: {}
+  policyTypes:
+  - Ingress
+---
+# Пример allow-all
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-all
+  namespace: default
+spec:
+  # Выбираем все поды
+  podSelector: {}
+  ingress:
+  # И разрешаем всё
+  - {}
+  policyTypes:
+  - Ingress

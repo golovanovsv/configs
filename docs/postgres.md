@@ -196,7 +196,7 @@ vacuum full analyze deficit.task_data
  - count(*) WHERE query ~'^autovac'
  - count(*) WHERE now() - xact_start AND query ~'^autovac'
 
-Репликация [pg_stat_replicatiob]:
+Репликация [pg_stat_replication]:
 postgres9:
   - pg_xlog_location_diff()
   - (send|write|flush|replay)_location
