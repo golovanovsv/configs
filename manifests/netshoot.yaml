@@ -1,0 +1,32 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: netshoot
+spec:
+  selector:
+    matchLabels:
+      app: netshoot
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: netshoot
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: shard2-spb5-kw5
+      containers:
+      - name: netshoot
+        image: nicolaka/netshoot
+        imagePullPolicy: IfNotPresent
+        command:
+        - /bin/sh
+        args:
+        - -c
+        - while true; do sleep 86400; done
+      tolerations:
+      - effect: NoExecute
+        key: node.kubernetes.io/not-ready
+        operator: Exists
+      - effect: NoSchedule
+        key: node.kubernetes.io/unschedulable
+        operator: Exists

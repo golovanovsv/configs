@@ -94,7 +94,7 @@ pg_basebackup -P -R -X stream -c fast -h 78.155.202.229 -U postgres -D ./data
 Создание слота репликации
 SELECT pg_create_physical_replication_slot('<name>'); 
 
-Список существующих слотов репликации
+Список существующих слотов репликации. Выводит в том числе логическую репликацию.
 select * from pg_replication_slots; 
 
 Удаление слота репликации
@@ -104,6 +104,12 @@ select pg_drop_replication_slot('<name>');
 
 9: select client_addr, state, sent_location, write_location, flush_location, replay_location from pg_stat_replication;
 10: select client_addr, state, sent_lsn, write_lsn, flush_lsn, replay_lsn from pg_stat_replication;
+
+## Расширения
+
+Расширения включаются в конкретных БД и реплицируются с бинарной репликацией.
+Необходимо подключение расширений параметром shared_preload_libraries в postgres.conf.
+SELECT * FROM pg_extension;
 
 ## Блокировки
 
