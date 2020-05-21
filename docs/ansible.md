@@ -1,6 +1,6 @@
 
 Перечень фактов:
-ansible -i'localhost,' -msetup all
+ansible all -i 'localhost,' -m setup -a 'filter=ansible_pkg_mgr'
 
 Сравнение версий
 kuber_version is version('1.9', '<')
@@ -14,3 +14,16 @@ list[dicts] | map(attribute='element') | list
 Собрать группу по ключу
 - group_by:
     key: "{{ group_id|default('noGroup') }}"
+
+### vars
+ansible_pkg_mgr: systemd|upstart|...
+ansible_os_family: RedHat|Debian
+ansible_distribution: OracleLinux|Ubuntu
+ansible_distribution_major_version:
+ansible_distribution_version:
+ansible_lsb:
+  codename:
+  description:
+  id:
+  major_release:
+  release:

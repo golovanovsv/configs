@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: centrifugo-exporter
+spec:
+  selector:
+    matchLabels:
+      app: centrifugo-exporter
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: centrifugo-exporter
+    spec:
+      containers:
+      - name: exporter
+        image: kismia/centrifugo-prometheus-exporter
+        imagePullPolicy: IfNotPresent
+        args:
+        - --centrifugo-endpoint=http://centrifugo:8080
+        - --centrifugo-secret=<secret>
+        ports:
+        - name: metrics
+          containerPort: 9564
+          protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: /metrics
+            port: 9564
+        readinessProbe:
+          httpGet:
+            path: /metrics
+            port: 9564
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: centrifugo-exporter
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/path: "/metrics"
+    prometheus.io/port: "9564"
+spec:
+  selector:
+    app: centrifugo-exporter
+  ports:
+  - name: metrics
+    protocol: TCP
+    port: 9564
+    targetPort: 9564
