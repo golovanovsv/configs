@@ -27,3 +27,5 @@ ansible_lsb:
   id:
   major_release:
   release:
+
+ansible_hostname: hostname from facts

@@ -153,9 +153,6 @@ create database confluencedb_docker LC_COLLATE = 'C.UTF-8' LC_CTYPE = 'C.UTF-8' 
 
 pg_dump -U confluence -O -x -Fc confluencedb | pg_restore --clean --if-exist --no-acl --no-owner --verbose -d confluencedb_docker -U confluence
 
-vC8MSDTT8j
-
-
 dpkg-reconfigure locales
 
 create database <db> LC_COLLATE = 'ru_RU.UTF-8' LC_CTYPE = 'ru_RU.UTF-8' TEMPLATE template0;
@@ -209,3 +206,7 @@ postgres9:
 postgres10:
   - pg_wal_lsn_diff()
   - (write|flush|replay)_lag
+
+## Checkpoints
+select * from pg_stat_bgwriter; - статистика сбросов shared_buffers на диск
+select pg_stat_reset_shared('bgwriter'); - сброс статистики

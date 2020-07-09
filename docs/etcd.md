@@ -18,3 +18,5 @@ docker exec -it 9643024b51ce etcdctl \
   --key /etc/kubernetes/pki/etcd/server.key \
   --endpoints https://127.0.0.1:2379 \
 -w table member list
+
+etcdctl member update $(cat memeber_id) --peer-urls="<new url>"

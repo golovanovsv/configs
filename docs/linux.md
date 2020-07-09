@@ -46,8 +46,21 @@ dmsetup status
 dmsetup info /dev/dm-0
 dmsetup status /dev/dm-0
 
+## DeviceAdm
+devadm control --reload-rules
+
+## Disk queue
+cat /sys/block/<dev>/queue/scheduler
+echo cfq > /sys/block/<dev>/queue/scheduler
+
 ## yum
 yum list installed
+yum --showduplicates list <package>
+
+## ssh
+port-forwarding
+ssh -L local_socket:remote_socket
+ssh -L [local_address:]local_port:host:hostport
 
 ## rsync
 rsync <from> <to>
@@ -63,3 +76,7 @@ find /proc -maxdepth 2 -path "/proc/[0-9]*/status" -readable \
 ### docker container by pid
 cat /proc/<PID>/cgroup
 docker ps | grep <cgroup id>
+
+### sed
+sed -i '50001,$ d' filename - удалить линии в файле с 50001
+sed -i -e 's/aaaa/bbbb/g' filename - замена
