@@ -15,6 +15,15 @@ DELETE /index
 curl -H "Content-Type: application/json" -XPOST "http://localhost:9200/indexname/typename/optionalUniqueId" \
   -d '{ "field" : "value" }'
 
+# Delete
+POST /<index>/_delete_by_query {
+  "query": {
+    "match: {
+      "user.id": "reptile"
+    }
+  }
+}
+
 # Templates
 PUT _template/default
 {
@@ -49,12 +58,22 @@ GET /<index>/<type>_search -d
   }
 }
 
-
+## Число реплик
 PUT /<index>/_settings
 {
     "index" : {
         "number_of_replicas" : 1
     }
+}
+
+## Read-only
+PUT weblogs-2018.09.10/_settings
+{
+  "index": {
+    "blocks": {
+      "read_only_allow_delete": "false"
+    }
+  }
 }
 
 # Index Lifecycle management

@@ -210,3 +210,54 @@ postgres10:
 ## Checkpoints
 select * from pg_stat_bgwriter; - статистика сбросов shared_buffers на диск
 select pg_stat_reset_shared('bgwriter'); - сброс статистики
+
+## Фрагментированность таблиц
+SELECT schemaname,
+       tablename,
+       dead_tuple_count(stats) AS dead_tuples,
+       pg_size_pretty(dead_tuple_len(stats)) AS dead_space,
+       pg_size_pretty(free_space(stats)) AS free_space,
+       last_autovacuum,
+       last_autoanalyze
+FROM
+  (SELECT pgt.schemaname AS schemaname,
+          pgt.tablename AS tablename,
+          pgstattuple(pgt.schemaname || '.' || pgt.tablename) 
+          AS stats,
+          uts.last_autovacuum AS last_autovacuum,
+          uts.last_autoanalyze AS last_autoanalyze
+   FROM pg_tables AS pgt
+   LEFT JOIN pg_stat_user_tables 
+        AS uts 
+        ON pgt.schemaname = uts.schemaname
+   AND pgt.tablename = uts.relname
+   WHERE pgt.schemaname NOT IN ('repack','pg_catalog')) AS r
+ORDER BY dead_tuples DESC;
+
+## Фрагментированность индексов
+SELECT schemaname,
+       indexname,
+       tablename,
+       dead_tuple_count(stats) AS dead_tuples,
+       pg_size_pretty(dead_tuple_len(stats)) AS dead_space,
+       pg_size_pretty(free_space(stats)) AS free_space
+FROM
+  (SELECT pgt.schemaname AS schemaname,
+          pgt.indexname AS indexname,
+          pgt.tablename AS tablename,
+          pgstattuple(pgt.schemaname || '.' || pgt.indexname) AS stats
+   FROM pg_indexes AS pgt
+   WHERE pgt.schemaname NOT IN ('repack',
+                                'pg_catalog')
+     AND pgt.indexname NOT IN ('some',
+                               'important',
+                               'triggers')) AS r
+ORDER BY dead_tuples DESC;
+
+## Дефрагментация
+pg_repack
+
+## patroni
+
+patronictl -c <config> list
+patronictl -c postgres.yml reinit airflow-ml-db airflow-ml-db-1

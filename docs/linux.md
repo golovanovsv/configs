@@ -73,6 +73,9 @@ sudo iptables -t nat -L -n -v
 find /proc -maxdepth 2 -path "/proc/[0-9]*/status" -readable \
   -exec awk -v FS=":" '{process[$1]=$2;sub(/^[ \t]+/,"",process[$1]);} END {if(process["VmSwap"] && process["VmSwap"] != "0 kB") printf "%10s %-30s %20s\n",process["Pid"],process["Name"],process["VmSwap"]}' '{}' \; | awk '{print $(NF-1),$0}' | sort -hr | head | cut -d " " -f2- 
 
+### Memory usage by proc
+ps -o pid,user,%mem,command ax | sort -b -k3 -r | more
+
 ### docker container by pid
 cat /proc/<PID>/cgroup
 docker ps | grep <cgroup id>
