@@ -9,7 +9,7 @@ GET _cluster/settings?include_defaults&flat_settings&local&filter_path=defaults.
 curl "localhost:9200/_cluster/settings?include_defaults" | jq '.defaults.indices.breaker'
 curl "localhost:9200/_cluster/settings?include_defaults" | jq '.persistent'
 
-DELETE /index
+DELETE /<index>
 
 # Write
 curl -H "Content-Type: application/json" -XPOST "http://localhost:9200/indexname/typename/optionalUniqueId" \

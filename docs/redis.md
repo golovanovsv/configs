@@ -14,3 +14,6 @@ slave-read-only yes          # Принимать запросы только н
 
 # Информация по памяти
 redis-cli info memory
+
+# Запросы
+Поиск по значению: keys *<value>*

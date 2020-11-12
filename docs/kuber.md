@@ -8,6 +8,7 @@ kubectl -n <ns> create secret tls <name> --cert <certfile> --key <keyfile> --dry
 kubectl -n <ns> get pod <pod> -o yaml
 kubectl -n <ns> get pod <pod> -o json
 kubectl -n <ns> get pod <pod> -o jsonpath='{.spec.ports[?(@.name=="http")].nodePort}'
+kubectl get no -o jsonpath='{ range .items[*]}{.metadata.name}{"\t"}{.status.allocatable.cpu}:{.status.allocatable.memory}{"\t"}{.spec.taints[*].key}{"\n"}{ end }'
 kubectl -n <ns> get pod --sort-by='{.firstTimestamp}'
 kubectl -n <ns> get pod --sort-by=.metadata.creationTimestamp
 

@@ -12,11 +12,17 @@ db.adminCommand("listDatabases").databases.forEach(function (d) {
 })
 
 # Обслуживание DB
+## Перевести ноду в режим обслуживания
+db.adminCommand({ replSetMaintenance: 1 })
 ## Выполнять только на SECONDARY! Приводит к остановке реплики.
 db.repairDatabase() 
 
 db.<collection-name>.stats().wiredTiger["block-manager"]["file bytes available for reuse"]
 db.runCommand({ compact: <collection-name> })
+
+## Управление уровнем совместимости
+db.adminCommand( { getParameter: 1, featureCompatibilityVersion: 1 } )
+db.adminCommand( { setFeatureCompatibilityVersion: "4.2" } )
 
 # Backup-restore
 mongodump --port 27017 -u admin --password <password> --authenticationDatabase=admin --db=mongo_db --archive=mongo_db.dump 
@@ -40,8 +46,8 @@ db.getCollectionNames().forEach(function(c) {
   printjson(db[c].stats().ns+": "+db[c].stats().storageSize/1024/1024+" Mb");
 })
 db.getCollectionNames().forEach(function(c) {
-  if (db[c].stats().storageSize/1024/1024 > 1) {
-    printjson(db[c].stats().ns+": "+db[c].stats().storageSize/1024/1024+" Mb");
+  if (db[c].stats().storageSize/1024/1024/1024 > 1) {
+    printjson(db[c].stats().ns+": "+db[c].stats().storageSize/1024/1024/1024+" Gb");
   }
 })
 
@@ -52,8 +58,8 @@ db.getCollection('eve_taxi').getIndexes()
 db.getCollection('customers').findOne()
 db.getCollection('customers').find({"_id":"XXX"})
 
-db.customers.insertOne(
-   { _id: 1, status: "a", lastModified: ISODate("2013-10-02T01:11:18.965Z") }
+db.customers2.insertOne(
+   { _id: 2, status: "b", lastModified: ISODate("2013-10-02T01:11:18.965Z") }
 )
 
 # Queries
@@ -66,3 +72,12 @@ db.<collection>.findOne({ $and: [{"createdAt": { $gte: 1598918400 }}, { "created
 
 var date = NumberLong(new Date("2020-07-20T00:00:00Z"))
 var date = new Date(<NumberLong>)
+
+# Создаем индексы
+db.getCollectionNames().forEach(
+  function(col) {
+    print("Create indexes for " + col);
+    db.getCollection(col).createIndex({'value' : 1, 'time' : -1}, { background: true, name: 'value_by_time_idx'})
+    db.getCollection(col).createIndex({'ttl' : 1}, { expireAfterSeconds:1, background: true, name: 'ttl_idx'})
+  }
+)
