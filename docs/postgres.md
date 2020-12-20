@@ -258,6 +258,10 @@ ORDER BY dead_tuples DESC;
 pg_repack
 
 ## patroni
-
 patronictl -c <config> list
 patronictl -c postgres.yml reinit airflow-ml-db airflow-ml-db-1
+
+## Indexes
+CREATE INDEX by_date_stfs ON public.stfs_data (
+  created_at DESC
+)

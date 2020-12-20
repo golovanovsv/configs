@@ -28,7 +28,6 @@ db.adminCommand( { setFeatureCompatibilityVersion: "4.2" } )
 mongodump --port 27017 -u admin --password <password> --authenticationDatabase=admin --db=mongo_db --archive=mongo_db.dump 
 mongorestore --port 27017 -u admin --password <password> --authenticationDatabase=admin --db=mongo_db --archive=mongo_db.dump
 
-
 # Пользователи
 db.getUsers()
 
@@ -81,3 +80,13 @@ db.getCollectionNames().forEach(
     db.getCollection(col).createIndex({'ttl' : 1}, { expireAfterSeconds:1, background: true, name: 'ttl_idx'})
   }
 )
+
+# Profiling
+db.getProfilingStatus()
+db.setProfilingLevel(0, { slowms: 200 })
+
+db.teams.remove({ _id: "stfs" })
+db.users.updateOne({ _id: "f5846a32-683a-44b5-829d-9f19f9163dd8"}, { $set: { "roles": ["FraudChiefOfficer", "ChiefRiskOfficer"] }})
+
+# Replication
+rs.remove("<hostname>")

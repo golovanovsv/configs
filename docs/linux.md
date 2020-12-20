@@ -84,3 +84,26 @@ docker ps | grep <cgroup id>
 ### sed
 sed -i '50001,$ d' filename - удалить линии в файле с 50001
 sed -i -e 's/aaaa/bbbb/g' filename - замена
+
+### cgroups
+systemd-cgtop
+systemd-cgls [/docker/....]
+
+## sudo
+root ALL = (ALL:ALL) NOPASSWD:ALL
+
+root      - пользователь или группа (начинается со значка %)
+ALL       - все хосты
+(ALL:ALL) - от имени каких пользователей:групп можно выполнять комманды
+NOPASSWD  - какие команды можно выполнять без пароля
+PASSWD    - для каких команд пароль требуется
+
+## alternatives
+
+update-alternatives --display python3
+update-alternatives --set python3 /usr/bin/python3.5
+
+## Hot add devices
+
+disks:
+- echo "- - -" >> /sys/class/scsi_host/host<number>/scan

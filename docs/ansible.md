@@ -20,7 +20,7 @@ ansible_pkg_mgr: systemd|upstart|...
 ansible_os_family: RedHat|Debian
 ansible_distribution: OracleLinux|Ubuntu
 ansible_distribution_major_version:
-ansible_distribution_version:
+ansible_distribution_version: "16.04"
 ansible_lsb:
   codename:
   description:

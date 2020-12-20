@@ -4,6 +4,15 @@ openssl genrsa -des3 -out ca.key 2048
 $ password
 openssl req -x509 -new -nodes -key ca.key -sha256 -subj "/CN=kube-ca" -days 3650 -out ca.crt
 
+## Create dhparm
+
+openssl dhparam -out /etc/nginx/ssl/dhparam 2048
+## Create selfsigned certificate
+
+openssl req -nodes -x509 -newkey rsa:4096 -keyout local.key -out local.pem -days 1825 -subj "/CN=Cybertonica gitlab server"
+
+## Create certificate
+
 openssl genrsa -out kube-apiserver.key 2048
 openssl req -new -key kube-apiserver.key -out kube-apiserver.csr -config file.cnf
 openssl x509 -req -CA ca.crt -CAkey ca.key -CAcreateserial -in kube-apiserver.csr -out kube-apiserver.crt -days 1825 -extensions v3_ext -extfile file.cnf
