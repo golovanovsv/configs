@@ -109,6 +109,7 @@ fi
 # Настройка альясов
 alias su="su -m"
 alias grep="grep --color=auto"
+alias ip="ip -color=auto"
 
 if [[ -f /usr/bin/bat ]]; then
     alias cat="/usr/bin/bat -n"
