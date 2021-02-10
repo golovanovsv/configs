@@ -17,10 +17,14 @@ kubectl get endpoints
 kubectl get CSINode
 kubectl get csidrivers
 
+kubectl rollout restart deployment/
+
 # kubectl systems
 kubectl taint nodes --all node-role.kubernetes.io/master-
 kubectl taint nodes --all node-role.kubernetes.io/master:NoSchedule-
 kubectl taint node k0 node-role.kubernetes.io/master='':NoSchedule
+
+kubectl drain <node> [--ignore-daemonsets]
 
 kubectl label node k0 node-role.kubernetes.io/ingress=true
 kubectl label node k0 node-role.kubernetes.io/ingress-
@@ -30,7 +34,7 @@ kubectl get cs
 
 # kubeadm
 
-sudo kubeadm init --node-name k0.xaddr.ru --kubernetes-version 1.16 --pod-network-cidr=10.244.0.0/23 --upload-certs --control-plane-endpoint 5.189.0.215
+sudo kubeadm init --node-name k0.xaddr.ru --kubernetes-version 1.16 --pod-network-cidr=10.244.0.0/20 --upload-certs --control-plane-endpoint 5.189.0.215
 sudo kubeadm init --node-name k0.xaddr.ru --upload-certs --config /home/reptile/cluster.yml
 sudo kubeadm token create --print-join-command
 
@@ -39,6 +43,10 @@ sudo kubeadm join --pod-network-cidr=10.244.0.0/24
 kubeadm join 5.189.0.215:6443 [--control-plane] --token <token> --discovery-token-ca-cert-hash <dtoken>
 
 [config.yaml](https://godoc.org/k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/v1beta2)
+
+# kubeadm upload certs
+
+sudo kubeadm init phase upload-certs --upload-certs
 
 # kubeadm upgrade
 Обновляться можно только на одну версию. Таким образом необходимо:

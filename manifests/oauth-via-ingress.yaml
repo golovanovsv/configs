@@ -1,0 +1,3 @@
+  annotations: 
+    nginx.ingress.kubernetes.io/auth-url: "http://oaproxy-oauth2-proxy.services.svc.cluster.local:80/oauth2/auth"
+    nginx.ingress.kubernetes.io/auth-signin: "https://$host/oauth2/start?rd=$request_uri"

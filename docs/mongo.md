@@ -25,8 +25,8 @@ db.adminCommand( { getParameter: 1, featureCompatibilityVersion: 1 } )
 db.adminCommand( { setFeatureCompatibilityVersion: "4.2" } )
 
 # Backup-restore
-mongodump --port 27017 -u admin --password <password> --authenticationDatabase=admin --db=mongo_db --archive=mongo_db.dump 
-mongorestore --port 27017 -u admin --password <password> --authenticationDatabase=admin --db=mongo_db --archive=mongo_db.dump
+mongodump --port 27017 -u admin --password <password> --authenticationDatabase=admin --db=mongo_db [--collection=<collection>] --archive=mongo_db.dump [--gzip]
+mongorestore --port 27017 -u admin --password <password> --authenticationDatabase=admin -archive=mongo_db.dump [--gzip] // db/collection не указывается при восстановлении из бинаря
 
 # Пользователи
 db.getUsers()
