@@ -1,6 +1,6 @@
 # Общие параметры
-path=(/bin /sbin /usr/bin /usr/sbin /usr/local/bin /usr/local/sbin /usr/local/samba/bin \
-    /usr/local/samba/sbin /usr/X11R6/bin /usr/X11R6/sbin /stand /usr/lib/python-django/bin .)
+path=( /bin /sbin /usr/bin /usr/sbin /usr/local/bin /usr/local/sbin /usr/local/samba/bin \
+       /usr/local/samba/sbin /usr/X11R6/bin /usr/X11R6/sbin /stand /usr/lib/python-django/bin .)
 typeset -U path
 umask 022
 
@@ -13,12 +13,20 @@ username=`whoami`
 os=`uname`
 
 # Установка опций
-setopt APPEND_HISTORY
-setopt HIST_IGNORE_ALL_DUPS
-setopt HIST_IGNORE_SPACE
-setopt HIST_REDUCE_BLANKS
+# Все опции - http://zsh.sourceforge.net/Doc/Release/Options.html
+setopt APPEND_HISTORY       # Писать одну историю в рамках нескольких сессий zsh
+setopt INC_APPEND_HISTORY   # Дописывать историю сразу, не ждать завершения оболочки
+# setopt HIST_IGNORE_ALL_DUPS # Если в файле истории уже есть такая команда, то предыдущая запись удаляется, а новая записывается в конец
+setopt HIST_IGNORE_DUPS     # Не писать посторяющиеся команды, идущие подряд
+setopt HIST_IGNORE_SPACE    # Не писать строки, начинающиеся с пробелов
+setopt HIST_REDUCE_BLANKS   # Убирать лишние пробелы
 setopt PROMPT_SUBST
 setopt AUTOCD
+
+# Установка переменных zsh
+HISTFILE=~/.zhistory  # Путь к файлу истории
+SAVEHIST=1000         # Число строк в файле истории
+HISTSIZE=1000         # Число строк в памяти
 
 # Установка переменных среды
 export FTP_PASSIVE_MODE=no
@@ -52,6 +60,32 @@ fg_no_color=$'%{\e[0m%}'
 
 
 # Переопределение фунциональных клавиш
+# Чтобы получить нужные коды запусти zkbd
+key[F1]='^[OP'
+key[F2]='^[OQ'
+key[F3]='^[OR'
+key[F4]='^[OS'
+key[F5]='^[[15~'
+key[F6]='^[[17~'
+key[F7]='^[[18~'
+key[F8]='^[[19~'
+key[F9]='^[[20~'
+key[F10]='^[[21~'
+key[F11]='^[[23~'
+key[F12]='^[[24~'
+key[Backspace]='^H'
+key[Insert]='^[[2~'
+key[Home]='^[[1~'
+key[PageUp]='^[[5~'
+key[Delete]='^[[3~'
+key[End]='^[[4~'
+key[PageDown]='^[[6~'
+key[Up]='^[[A'
+key[Left]='^[[D'
+key[Down]='^[[B'
+key[Right]='^[[C'
+# key[Menu]=''''
+
 [[ -n "${key[Home]}"     ]]  && bindkey  "${key[Home]}"     beginning-of-line
 [[ -n "${key[End]}"      ]]  && bindkey  "${key[End]}"      end-of-line
 [[ -n "${key[Insert]}"   ]]  && bindkey  "${key[Insert]}"   overwrite-mode
@@ -62,13 +96,6 @@ fg_no_color=$'%{\e[0m%}'
 [[ -n "${key[Right]}"    ]]  && bindkey  "${key[Right]}"    forward-char
 [[ -n "${key[PageUp]}"   ]]  && bindkey  "${key[PageUp]}"   beginning-of-buffer-or-history
 [[ -n "${key[PageDown]}" ]]  && bindkey  "${key[PageDown]}" end-of-buffer-or-history
-
-# Установка переменных zsh
-HISTFILE=~/.zhistory
-SAVEHIST=100
-HISTSIZE=100
-
-CEPH_CLUSTER="xvers"
 
 # Настройка приглашений
 # Общая часть
@@ -105,7 +132,6 @@ else
     PROMPT="${fg_light_cyan}[${user_part}${fg_light_cyan}:${fg_light_green}%~${fg_light_cyan}]${eop_part}"
 fi
 
-
 # Настройка альясов
 alias su="su -m"
 alias grep="grep --color=auto"
@@ -113,11 +139,6 @@ alias ip="ip -color=auto"
 
 if [[ -f /usr/bin/bat ]]; then
     alias cat="/usr/bin/bat -n"
-fi
-
-if [[ -n "$CEPH_CLUSTER" ]]; then
-    alias rbd="rbd --cluster $CEPH_CLUSTER"
-    alias ceph="ceph --cluster $CEPH_CLUSTER"
 fi
 
 if [[ ${os} == "Linux" ]]; then
@@ -144,12 +165,6 @@ fi
 if [[ -f /usr/local/bin/helm || -f /usr/bin/helm ]]; then
     source <(helm completion zsh)
 fi
-
-ceph_args=(health auth osd crush pg df list ls lspools dump add in rm del out get set export get-or-create get-or-create-key caps print-key import detail pool init )
-compctl -k ceph_args ceph
-
-rbd_args=(pool snap mirror init create ls info trash purge resize rm mv restore rollback protect unprotect clone enable disable peer add remove image resync image status)
-compctl -l rbd_args rbd
 
 appsh_args=(stop start reload)
 compctl -k appsh_args app.sh

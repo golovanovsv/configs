@@ -28,6 +28,10 @@ db.adminCommand( { setFeatureCompatibilityVersion: "4.2" } )
 mongodump --port 27017 -u admin --password <password> --authenticationDatabase=admin --db=mongo_db [--collection=<collection>] --archive=mongo_db.dump [--gzip]
 mongorestore --port 27017 -u admin --password <password> --authenticationDatabase=admin -archive=mongo_db.dump [--gzip] // db/collection не указывается при восстановлении из бинаря
 
+mongodump --port 27017 -u admin --password <password> --authenticationDatabase=admin --db=swap_global --collection=plugin_combinations --archive=swap_global.plugin_combinations.ts.dump
+mongorestore --port 27017 --host 172.16.121.8 --nsFrom "swap_global.plugin_combinations" --nsTo "upload.plugin_combinations_ts" --archive=swap_global.plugin_combinations.ts.dump
+mongorestore --port 27017 --host 172.16.121.8 --nsFrom "swap_global.*" --nsTo "upload.*" --archive=swap_global.plugin_combinations.ts.dump
+
 # Пользователи
 db.getUsers()
 
@@ -89,4 +93,5 @@ db.teams.remove({ _id: "stfs" })
 db.users.updateOne({ _id: "f5846a32-683a-44b5-829d-9f19f9163dd8"}, { $set: { "roles": ["FraudChiefOfficer", "ChiefRiskOfficer"] }})
 
 # Replication
-rs.remove("<hostname>")
+rs.add( {host: "<host>:<port>", priority: 0, hidden: true} )
+rs.remove("<hostname>:<port>")
