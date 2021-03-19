@@ -107,3 +107,7 @@ update-alternatives --set python3 /usr/bin/python3.5
 
 disks:
 - echo "- - -" >> /sys/class/scsi_host/host<number>/scan
+
+## JQ
+aws ec2 describe-instances | ./jq '.Reservations[].Instances[] | "\(.NetworkInterfaces[].PrivateIpAddress) \(.State.Name)"'
+aws ec2 describe-instances | ./jq '.Reservations[].Instances[] | select(.State.Name=="running") | .NetworkInterfaces[].PrivateIpAddress' | sed 's/\"//g'

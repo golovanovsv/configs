@@ -22,6 +22,6 @@ spec:
         - -c
         - while true; do sleep 86400; done
         securityContext:
-          privileged: false
+          privileged: true
           capabilities:
             add: ["ALL"]
