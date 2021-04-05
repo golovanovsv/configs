@@ -1,6 +1,7 @@
 # elasticsearch
 
 GET _cat/indices?v - список индексов
+GET /_cat/indices?v&s=store.size - размер индексов по размеру
 GET _cat/shards - список шардов
 GET _cat/nodes
 GET _cluster/health
@@ -72,6 +73,29 @@ PUT weblogs-2018.09.10/_settings
   "index": {
     "blocks": {
       "read_only_allow_delete": "false"
+    }
+  }
+}
+
+## Watermarks
+PUT _cluster/settings
+{
+  "persistent": {
+    "cluster": {
+      "routing": {
+        "allocation.disk.watermark.low": "97%",
+        "allocation.disk.watermark.high": "98%",
+        "allocation.disk.watermark.flood_stage": "99%"
+      }
+    }
+  },
+  "transient": {
+    "cluster": {
+      "routing": {
+        "allocation.disk.watermark.low": "97%",
+        "allocation.disk.watermark.high": "98%",
+        "allocation.disk.watermark.flood_stage": "99%"
+      }
     }
   }
 }

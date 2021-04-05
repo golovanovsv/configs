@@ -74,8 +74,16 @@ sudo iptables -t nat -L -n -v
 find /proc -maxdepth 2 -path "/proc/[0-9]*/status" -readable \
   -exec awk -v FS=":" '{process[$1]=$2;sub(/^[ \t]+/,"",process[$1]);} END {if(process["VmSwap"] && process["VmSwap"] != "0 kB") printf "%10s %-30s %20s\n",process["Pid"],process["Name"],process["VmSwap"]}' '{}' \; | awk '{print $(NF-1),$0}' | sort -hr | head | cut -d " " -f2- 
 
-### Memory usage by proc
+### Memory
 ps -o pid,user,%mem,command ax | sort -b -k3 -r | more
+
+# Отсортировать по памяти
+top -o %MEM
+ - VIRT - объем виртуальной памяти
+ - RES  - объем реальной памяти
+
+pmap -x <PID> - подробности по использованию памяти процессом
+ - anon - выделенная в прооцессе работы память
 
 ### docker container by pid
 cat /proc/<PID>/cgroup
@@ -111,3 +119,7 @@ disks:
 ## JQ
 aws ec2 describe-instances | ./jq '.Reservations[].Instances[] | "\(.NetworkInterfaces[].PrivateIpAddress) \(.State.Name)"'
 aws ec2 describe-instances | ./jq '.Reservations[].Instances[] | select(.State.Name=="running") | .NetworkInterfaces[].PrivateIpAddress' | sed 's/\"//g'
+
+## IP
+ip route get <ip>
+ip rule list

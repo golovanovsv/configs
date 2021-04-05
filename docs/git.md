@@ -8,5 +8,5 @@ git checkout <branch>
 git rebase master
 <resolve conflicts>
 git add .
-git rebase —continue
+git rebase --continue
 git push --force
