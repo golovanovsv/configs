@@ -1,4 +1,0 @@
-# Работа со стейтом
-
-terraform state rm 'aws_instance.jumphost'
-terraform import aws_instance.jumphost i-01a1227613a8f1c1a
