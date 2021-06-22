@@ -66,6 +66,8 @@ ssh -L [local_address:]local_port:host:hostport
 # -r - recursive
 rsync <from> <to>
 rsync --progress -r 127.0.0.1:kube/* /data/var/log/td-agent/kube/
+# Папку в корень
+rsync --progress postgres -r sgolovanov@mongo-m-1:~
 
 ## iptables
 sudo iptables -t nat -L -n -v

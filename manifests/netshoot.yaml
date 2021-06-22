@@ -12,6 +12,23 @@ spec:
       labels:
         app: netshoot
     spec:
+      # affinity:
+      #   nodeAffinity:
+      #     requiredDuringSchedulingIgnoredDuringExecution:
+      #       nodeSelectorTerms:
+      #       - matchExpressions:
+      #         - key: kubernetes.io/hostname
+      #           operator: In
+      #           values:
+      #           - ip-172-18-65-157.eu-west-1.compute.internal
+      # tolerations:
+      # - key: ml-only
+      #   operator: Exists
+      # volumes:
+      # - name: root
+      #   hostPath:
+      #     path: /
+      #     type: Directory
       containers:
       - name: netshoot
         image: nicolaka/netshoot
@@ -21,7 +38,15 @@ spec:
         args:
         - -c
         - while true; do sleep 86400; done
+        # volumeMounts:
+        # - mountPath: /mnt
+        #   name: root
         securityContext:
           privileged: true
           capabilities:
             add: ["ALL"]
+        startupProbe:
+          exec:
+            command:
+            - cat 
+            - /etc/os-release

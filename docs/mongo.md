@@ -37,6 +37,8 @@ mongodump --port 27018 -u admin --password DoociecuNgo1ee --authenticationDataba
 
 # Пользователи
 db.getUsers()
+db.changeUserPassword("monitor", "<pwd>")
+db.updateUser("monitor", { pwd: "<pwd>", passwordDigestor:"server"});
 
 # Коллекции
 db.getCollectionNames()
@@ -98,4 +100,6 @@ db.users.updateOne({ _id: "f5846a32-683a-44b5-829d-9f19f9163dd8"}, { $set: { "ro
 # Replication
 rs.initiate()
 rs.add( {host: "<host>:<port>", priority: 0, hidden: true} )
+rs.addArb("<host>:<port>")
 rs.remove("<hostname>:<port>")
+db.printReplicationInfo()

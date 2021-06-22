@@ -45,7 +45,7 @@ jcmd <PID> VM.native_memory [detail]
 
 # Размер Treads
 #  Включает стек потока (Примерно 100-150 Kb на поток)
--Xss # Thread stack  size
+-Xss # Thread stack size
 -XX:VMThreadStackSize
 -XX:CompiletThreadStackSize
 

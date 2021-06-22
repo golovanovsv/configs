@@ -12,6 +12,9 @@ kubectl get no -o jsonpath='{ range .items[*]}{.metadata.name}{"\t"}{.status.all
 kubectl -n <ns> get pod --sort-by='{.firstTimestamp}'
 kubectl -n <ns> get pod --sort-by=.metadata.creationTimestamp
 
+## list all images in cluster
+kubectl get pods --all-namespaces -o jsonpath="{..image}" | tr -s '[[:space:]]' '\n' | sort | uniq -c | sort -gr
+
 kubectl get mutatingwebhookconfiguration
 kubectl get endpoints
 kubectl get CSINode
@@ -33,7 +36,6 @@ kubectl api-versions
 kubectl get cs
 
 # kubeadm
-
 sudo kubeadm init --node-name k0.xaddr.ru --kubernetes-version 1.16 --pod-network-cidr=10.244.0.0/20 --upload-certs --control-plane-endpoint 5.189.0.215
 sudo kubeadm init --node-name k0.xaddr.ru --upload-certs --config /home/reptile/cluster.yml
 sudo kubeadm token create --print-join-command
