@@ -16,6 +16,9 @@ DELETE /<index>
 curl -H "Content-Type: application/json" -XPOST "http://localhost:9200/indexname/typename/optionalUniqueId" \
   -d '{ "field" : "value" }'
 
+# search
+GET /<index>/_search?q=*
+
 # Delete
 POST /<index>/_delete_by_query {
   "query": {

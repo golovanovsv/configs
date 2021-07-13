@@ -20,7 +20,7 @@ path "test/db"{
 }
 
 ## tokens
-vault token-create -policy=<policy name> 
+vault token create -policy=<policy name> 
 
 ## ansible
 Плагин (?) ansible-vault

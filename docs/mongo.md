@@ -103,3 +103,10 @@ rs.add( {host: "<host>:<port>", priority: 0, hidden: true} )
 rs.addArb("<host>:<port>")
 rs.remove("<hostname>:<port>")
 db.printReplicationInfo()
+
+# Oplog size
+use local
+db.oplog.rs.stats().maxSize/1024/1024/1024
+
+oplog является локальным параметром сервера. Не реплицируется.
+db.adminCommand({replSetResizeOplog: 1, size: <size-in-mb>})

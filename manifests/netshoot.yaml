@@ -50,3 +50,10 @@ spec:
             command:
             - cat 
             - /etc/os-release
+        # resources:
+        #   requests:
+        #     cpu: 1
+        #     memory: 2Gi
+        #   limits:
+        #     cpu: 1
+        #     memory: 2Gi

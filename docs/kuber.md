@@ -115,3 +115,7 @@ sudo apt-get install -y kubelet kubeadm kubectl
 
 ## API
 ingress: extensions/v1beta1 >= 1.14 networking.k8s.io/v1beta1
+
+###
+export TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
+curl -k -H "Authorization: Bearer $TOKEN" https://kubernetes.default.svc

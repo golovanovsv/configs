@@ -53,6 +53,10 @@ devadm control --reload-rules
 cat /sys/block/<dev>/queue/scheduler
 echo cfq > /sys/block/<dev>/queue/scheduler
 
+## lvm
+lvremove /dev/vg00/home
+lvcreate -L3G -nredis-mibank fastssd
+
 ## yum
 yum list installed
 yum --showduplicates list <package>
@@ -116,12 +120,21 @@ update-alternatives --set python3 /usr/bin/python3.5
 ## Hot add devices
 
 disks:
-- echo "- - -" >> /sys/class/scsi_host/host<number>/scan
+  echo "- - -" >> /sys/class/scsi_host/host<number>/scan
+
+cpu:
+  echo 1 > /sys/devices/system/cpu/cpu*/online
 
 ## JQ
 aws ec2 describe-instances | ./jq '.Reservations[].Instances[] | "\(.NetworkInterfaces[].PrivateIpAddress) \(.State.Name)"'
 aws ec2 describe-instances | ./jq '.Reservations[].Instances[] | select(.State.Name=="running") | .NetworkInterfaces[].PrivateIpAddress' | sed 's/\"//g'
+# Получить имена виртуалок, подключенных к subnet-id
+aws ec2 describe-instances --filters Name=subnet-id,Values=subnet-1623465f | jq '.Reservations[].Instances[].Tags[] | select(.Key=="Name") | .Value'
 
 ## IP
 ip route get <ip>
 ip rule list
+
+## xfs
+xfs_admin -l /dev/sdb1
+xfs_admin -L externo /dev/sdb1
