@@ -101,6 +101,9 @@ spec:
   routes:
   - kind: Rule
     match: Host(`gitlab.reptile.su`)
+    middlewares:
+    - name: https-redirect
+      namespace: kube-system
     services:
     - name: gitlab-ee
       kind: Service
