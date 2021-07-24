@@ -107,7 +107,7 @@ spec:
     services:
     - name: gitlab-ee
       kind: Service
-      namespace: gitlab
+      namespace: test
       port: 80
   tls:
     secretName: reptile.su
