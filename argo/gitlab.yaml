@@ -1,0 +1,113 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitlab-ee
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gitlab
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: gitlab
+    spec:
+      imagePullSecrets:
+      - name: dockercredentions
+      containers:
+      - image: registry.gitlab.com/golovanovsv/images/gitlab-ee:14.1.0
+        name: gitlab
+        ports:
+        - containerPort: 80
+          name: http
+        - containerPort: 443
+          name: https
+        - containerPort: 22
+          name: git
+        volumeMounts:
+        - name: gitlab-data
+          mountPath: /var/opt/gitlab
+        - name: gitlab-logs
+          mountPath: /var/log/gitlab
+        - name: gitlab-config
+          mountPath: /etc/gitlab
+      volumes:
+      - name: gitlab-data
+        persistentVolumeClaim:
+          claimName: gitlab-data
+      - name: gitlab-logs
+        persistentVolumeClaim:
+          claimName: gitlab-logs
+      - name: gitlab-config
+        persistentVolumeClaim:
+          claimName: gitlab-config
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: gitlab-data
+spec:
+  storageClassName: local-path
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: gitlab-logs
+spec:
+  storageClassName: local-path
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: gitlab-config
+spec:
+  storageClassName: local-path
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gitlab-ee
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    app: gitlab
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: gitlab-ee
+  namespace: gitlab
+spec:
+  entryPoints:
+  - websecure
+  routes:
+  - kind: Rule
+    match: Host(`gitlab.reptile.su`)
+    services:
+    - name: gitlab-ee
+      kind: Service
+      namespace: gitlab
+      port: 80
+  tls:
+    secretName: reptile.su
+    options:
+      namespace: kube-system
