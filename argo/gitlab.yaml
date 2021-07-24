@@ -95,7 +95,6 @@ apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
   name: gitlab-ee
-  namespace: gitlab
 spec:
   entryPoints:
   - websecure
