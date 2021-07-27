@@ -25,6 +25,7 @@ spec:
         - containerPort: 443
           name: https
         - containerPort: 22
+          hostPort: 222
           name: git
         volumeMounts:
         - name: gitlab-data
