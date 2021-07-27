@@ -150,7 +150,7 @@ if [[ -f /bin/jq || /usr/bin/jq ]]; then
     # - color for strings
     # - color for arrays
     # - color for objects
-    JQ_COLORS="1;31:1;31:1;32:1;33:1;36:1;36:1;36"
+    export JQ_COLORS="1;31:1;31:1;32:1;33:1;36:1;36:1;36"
 fi
 
 if [[ ${os} == "Linux" ]]; then
