@@ -142,6 +142,17 @@ if [[ -f /usr/bin/bat ]]; then
     alias cat="/usr/bin/bat -n"
 fi
 
+if [[ -f /bin/jq || /usr/bin/jq ]]; then
+    # - color for `null`
+    # - color for `false`
+    # - color for `true`
+    # - color for numbers
+    # - color for strings
+    # - color for arrays
+    # - color for objects
+    JQ_COLORS="1;31:1;31:1;32:1;33:1;36:1;36:1;36"
+fi
+
 if [[ ${os} == "Linux" ]]; then
     alias ls="ls -allh --color"
 elif [[ ${os} == "FreeBSD" ]]; then
