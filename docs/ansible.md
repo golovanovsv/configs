@@ -15,6 +15,11 @@ list[dicts] | map(attribute='element') | list
 - group_by:
     key: "{{ group_id|default('noGroup') }}"
 
+Не выводить чувствительные данные
+- name: "Set password"
+  set_fact: ...
+  no_log: true
+
 ### vars
 ansible_pkg_mgr: systemd|upstart|...
 ansible_os_family: RedHat|Debian

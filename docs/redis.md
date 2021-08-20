@@ -12,16 +12,22 @@ redis-cli slaveof no one
 slaveof 78.155.202.229 6379  # Адрес мастера
 masterauth <pwd of master>   # Пароль мастера
 slave-read-only yes          # Принимать запросы только на чтение
+auto-aof-rewrite-percentage 100 # Выполнять автоматический BGREWRITEAOF когда AOF вырос на 100% с последнего раза
+auto-aof-rewrite-min-size 128m  # Минимальный размер AOF когда BGREWRITEAOF может выполнятсья автоматически
 
 config get client-output-buffer-limit
 config set client-output-buffer-limit "slave 536870912 536870912 0"   # Буфер для slave 512Mb
 config set client-output-buffer-limit "slave 1073741824 1073741824 0" # Буфер для slave 1Gb
-config set client-output-buffer-limit "slave 1610612736 1610612736 0" # 
+config set client-output-buffer-limit "slave 1610612736 1610612736 0" # Буфер для slave 1.5Gb
 
 info replication
 
 # Информация по памяти
 redis-cli info memory
+
+# Оптимизация AOF
+redis-cli BGREWRITEAOF
+
 
 # Запросы
 Поиск по значению ключа: keys *<value>*

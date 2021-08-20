@@ -51,11 +51,11 @@ db.runCommand({"convertToCapped": "<collection-name>", size: 1000000000});
 ## Объем коллекций
 db.getCollection('eve_taxi').count()
 db.getCollectionNames().forEach(function(c) {
-  printjson(db[c].stats().ns+": "+db[c].stats().storageSize/1024/1024+" Mb");
+  printjson(db[c].stats().storageSize/1024/1024+" Mb: "+db[c].stats().ns);
 })
 db.getCollectionNames().forEach(function(c) {
   if (db[c].stats().storageSize/1024/1024/1024 > 1) {
-    printjson(db[c].stats().ns+": "+db[c].stats().storageSize/1024/1024/1024+" Gb");
+    printjson(db[c].stats().storageSize/1024/1024/1024+" Gb: "+db[c].stats().ns);
   }
 })
 
@@ -91,6 +91,7 @@ db.getCollectionNames().forEach(
 )
 
 # Profiling
+#  Индивидуальные параметры для каждого сервера
 db.getProfilingStatus()
 db.setProfilingLevel(0, { slowms: 200 })
 

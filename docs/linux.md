@@ -54,6 +54,9 @@ cat /sys/block/<dev>/queue/scheduler
 echo cfq > /sys/block/<dev>/queue/scheduler
 
 ## lvm
+pvresize /dev/sda
+
+lvextend -L[+2G|12G|+100%FREE] /dev/vg00/home
 lvremove /dev/vg00/home
 lvcreate -L3G -nredis-mibank fastssd
 

@@ -16,6 +16,7 @@ kubectl -n <ns> get pod --sort-by=.metadata.creationTimestamp
 kubectl get pods --all-namespaces -o jsonpath="{..image}" | tr -s '[[:space:]]' '\n' | sort | uniq -c | sort -gr
 
 kubectl get mutatingwebhookconfiguration
+kubectl get ValidatingWebhookConfiguration
 kubectl get endpoints
 kubectl get CSINode
 kubectl get csidrivers

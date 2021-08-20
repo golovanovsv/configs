@@ -12,6 +12,7 @@ pgcli - command line interface for Postgres with auto-completion and syntax
 \db - список tablespace
 \da - List of aggregate functions
 \dn - список схем
+\d  - 
 \dt *.* - список таблиц с указанием владельца
 \d+ *.* - посмотреть данные объекта
 
