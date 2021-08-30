@@ -12,11 +12,10 @@ spec:
       labels:
         app: netshoot
     spec:
-      imagePullPolicy: Always
       containers:
       - name: netshoot
         image: nicolaka/netshoot
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         command:
         - /bin/sh
         args:
