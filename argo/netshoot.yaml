@@ -12,6 +12,7 @@ spec:
       labels:
         app: netshoot
     spec:
+      imagePullPolicy: Always
       containers:
       - name: netshoot
         image: nicolaka/netshoot
