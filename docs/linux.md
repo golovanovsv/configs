@@ -14,12 +14,13 @@ systemd-delta --type=extended
 ntpq -pn
 
 ### LogRotate
+# https://wiki.enchtex.info/tools/system/logrotate
 logrotate
 
 sudo logrotate /etc/logrotate.conf --debug // Проверка
 
 rotate 10  # кол-во хранимых сжатых фрагментов
-size=16M   # максимальный размер несжатого файла; пока размер текущего
+size 16M   # максимальный размер несжатого файла; пока размер текущего
            # файла журнала не превысит данный порог, файл не будет "ротирован"
 weekly   # игнорировать размер файла; производить ротацию регулярно, раз в неделю
 daily / monthly /hourly / early

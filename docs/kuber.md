@@ -1,5 +1,4 @@
 # kubectl
-
 kubectl -n <ns> logs <pod> --previous --since 1h
 
 kubectl -n <ns> create secret tls <name> --cert <certfile> --key <keyfile>
@@ -11,6 +10,9 @@ kubectl -n <ns> get pod <pod> -o jsonpath='{.spec.ports[?(@.name=="http")].nodeP
 kubectl get no -o jsonpath='{ range .items[*]}{.metadata.name}{"\t"}{.status.allocatable.cpu}:{.status.allocatable.memory}{"\t"}{.spec.taints[*].key}{"\n"}{ end }'
 kubectl -n <ns> get pod --sort-by='{.firstTimestamp}'
 kubectl -n <ns> get pod --sort-by=.metadata.creationTimestamp
+
+# scheduller
+kubectl -n kube-system describe endpoints kube-scheduler # who is leader
 
 ## list all images in cluster
 kubectl get pods --all-namespaces -o jsonpath="{..image}" | tr -s '[[:space:]]' '\n' | sort | uniq -c | sort -gr
