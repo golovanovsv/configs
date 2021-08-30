@@ -17,7 +17,7 @@ spec:
       imagePullSecrets:
       - name: dockercredentions
       containers:
-      - image: registry.gitlab.com/golovanovsv/images/gitlab-ee:14.1.0
+      - image: registry.gitlab.com/golovanovsv/images/gitlab-ee:14.2.1
         name: gitlab
         ports:
         - containerPort: 80
