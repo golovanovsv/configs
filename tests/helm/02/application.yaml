@@ -1,0 +1,99 @@
+fromSecret: backend
+namespace: application
+
+replicaCount: 2
+
+envs:
+  - name: AF_IS_LEADER
+    value: "false"
+  - name: AF_IS_CLUSTER
+    value: "true"
+  - name: CHECK_SIGNATURE
+    value: "true"
+  - name: DOMAIN_URL
+    value: "https://application.example.com"
+  - name: DEFAULT_DECISION
+    value: "ALLOW"
+  - name: DATABASE_UPDATE_PATH
+    value: "conf/db/migrations"
+  - name: HISTORY_ENABLE
+    value: "true"
+  - name: LOGSTASH_URL
+    value: "logstash.monitor.svc:5005"
+  - name: MAILING_ENABLED
+    value: "true"
+  - name: MAIL_USER_NAME
+    value: "no-reply@example.com"
+  - name: MAIL_PASSWORD
+    value: "my-password"
+  - name: MAX_HISTORY
+    value: "30"
+  - name: SVO_ENABLE
+    value: "true"
+  - name: SVO_TRACK_URL
+    value: "http://private.svo.svc:8082"
+  - name: SVO_HOST
+    value: "private.svo.svc"
+  - name: SVO_PORT
+    value: "8082"
+    
+  - name: SERVICE_NAME
+    value: "application"
+  - name: SOLARIS_HOST
+    value: "solaris.application.svc"
+  - name: SOLARIS_PORT
+    value: "8085"
+  - name: SOLARIS_ENABLE
+    value: "true"
+  - name: SDG_ENABLE
+    value: "true"
+  - name: SDG_URL
+    value: "redis.application.svc:6379"
+  - name: SYNC_URL
+    value: "redis.application.svc:6379"
+  - name: SYNC_ENABLE
+    value: "true"
+  - name: JVM_MEMORY
+    value: "1024M"
+  - name: JAVA_OPTS
+    value: >-
+      -server
+      -Dfile.encoding=UTF-8
+      -XX:+UseG1GC
+      -Dsun.net.inetaddr.ttl=0
+      -Djava.net.preferIPv4Stack=true
+      -XX:+HeapDumpOnOutOfMemoryError
+      -XX:HeapDumpPath=/dumps/java_pid_$APPLICATION_UPTIME.hprof
+      -Dconfig.resource=production.conf
+      -Xms1024M
+      -Xmx1024M
+  - name: KAFKA_USER
+    value: application
+  - name: KAFKA_PASS
+    valueFrom:
+      secretKeyRef:
+          name: backend
+          key: KAFKA_PASSWORD
+  - name: KAFKA_HOST
+    value: "kafka-bootstrap.kafka.svc"
+  - name: KAFKA_ENABLE
+    value: "true"
+  - name: KAFKA_ENV
+    value: application
+  - name: KAFKA_PRODUCEROPTS
+    value: "message.max.bytes=15224000,client.id=application,acks=1"
+
+  - name: PROFILE_ENABLED
+    value: "true"
+  - name: MONGO_PROFILE_URI
+    valueFrom:
+      secretKeyRef:
+        name: backend
+        key: MONGO_URI
+
+service:
+  name: backend
+  type: ClusterIP
+  port: 7499
+  name_private: routing
+  port_private: 9009

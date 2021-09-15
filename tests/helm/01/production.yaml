@@ -1,0 +1,38 @@
+fullnameOverride: "elastic-production"
+
+clusterName: "screenwize"
+replicas: 2
+minimumMasterNode: 1
+imageTag: "7.11.0"
+volumeClaimTemplate:
+  storageClassName: "euw1c"
+  resources:
+    requests:
+      storage: 150Gi
+
+rbac:
+  create: "true"
+  serviceAccountName: "elasticsearch-production"
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 512Mi
+  limits:
+    cpu: 1
+    memory: 1Gi
+
+esJavaOpts: "-Xmx512m -Xms512m"
+
+tolerations:
+- operator: Exists
+  key: swe-only
+
+nodeAffinity:
+  requiredDuringSchedulingIgnoredDuringExecution:
+    nodeSelectorTerms:
+    - matchExpressions:
+      - key: project
+        operator: In
+        values:
+        - swe
