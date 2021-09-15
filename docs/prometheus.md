@@ -1,4 +1,7 @@
 
+# Редактор алертов alertmanager
+https://juliusv.com/promslack/
+
 label_replace(<vector>, "<target label>", "<content>", "<source label>", "<regexp>")
 Можно использовать несколько раз label_replace(label_replace(...), ...)
 
