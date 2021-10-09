@@ -10,6 +10,10 @@ RENAME TABLE [db11.]name11 TO [db12.]name12 [ON CLUSTER cluster]
 
 # Alters
 select mutation_id,database,table,command,parts_to_do,is_done from system.mutations where is_done = 0;
+select mutation_id,database,table,latest_fail_reason,create_time,latest_fail_time from system.mutations where is_done = 0;
+select mutation_id,parts_to_do from system.mutations where is_done = 0;
+KILL MUTATION WHERE mutation_id = '0000004890'
+
 
 # Partitions
 
