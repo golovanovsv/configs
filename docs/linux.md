@@ -66,9 +66,19 @@ yum list installed
 yum --showduplicates list <package>
 
 ## ssh
-port-forwarding
+key generation:
+ssh-keygen -t rsa -b 4096 -C "comment" -f <output-name>
+
+check key in ssh-agent:
+ssh-agent -L
+
+port-forwarding:
 ssh -L local_socket:remote_socket
 ssh -L [local_address:]local_port:host:hostport
+
+# compare priv and pub keys
+ssh-keygen -l -f <private-key>
+ssh-keygen -l -f <publick-key>
 
 ## rsync
 # -r - recursive
@@ -142,3 +152,25 @@ ip rule list
 ## xfs
 xfs_admin -l /dev/sdb1
 xfs_admin -L externo /dev/sdb1
+
+## Docker netns
+По-умолчанию netns должны храниться в /run/netns (оно же /var/run/netns ). Но docker хранит их в /var/run/docker/netns
+Чтобы утилита ip могла видеть пространства докера нужна ссылка
+sudo ln -s /var/run/docker/netns  /var/run/netns
+
+## Page cache
+reset cache:
+sync; echo 3 | sudo tee /proc/sys/vm/drop_caches
+
+## Wiregard
+apt install wireguard
+wg genkey | tee /etc/wireguard/privatekey | wg pubkey | tee /etc/wireguard/publickey
+
+/etc/wireguard/wg0.conf
+[Interface]
+Address = 10.7.0.1/24
+ListenPort = 51820
+PrivateKey = wJrG7cBytw3xhEJGFyOT7CvhsGgfFDVPzVlhUrXWGUo=
+
+systemctl enable wg-quick@wg0 && systemctl start wg-quick@wg0
+wg show wg0
