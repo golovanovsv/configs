@@ -74,7 +74,7 @@ kubectl apply -f https://raw.githubusercontent.com/cloudnativelabs/kube-router/m
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/mandatory.yaml
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/provider/baremetal/service-nodeport.yaml
 
-# Nginxinx-ingress
+# Nginxinc-ingress
 kubectl apply -f https://raw.githubusercontent.com/nginxinc/kubernetes-ingress/master/deployments/common/ns-and-sa.yaml
 kubectl apply -f https://raw.githubusercontent.com/nginxinc/kubernetes-ingress/master/deployments/common/default-server-secret.yaml
 kubectl apply -f https://raw.githubusercontent.com/nginxinc/kubernetes-ingress/master/deployments/common/nginx-config.yaml
@@ -119,6 +119,27 @@ sudo apt-get install -y kubelet kubeadm kubectl
 ## API
 ingress: extensions/v1beta1 >= 1.14 networking.k8s.io/v1beta1
 
-###
+### Auth in API
 export TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
 curl -k -H "Authorization: Bearer $TOKEN" https://kubernetes.default.svc
+
+# Auth
+## via cert
+
+openssl req -batch -nodes -new -newkey rsa:4096 -sha512 -out <username>.csr -keyout <username>.key -subj "/CN=<username>/O=<org>"
+
+export REQUEST=$(base64 -w 0 <username>.csr)
+cat << EOF | kubectl apply -f -
+apiVersion: certificates.k8s.io/v1
+kind: CertificateSigningRequest
+metadata:
+  name: <username>
+spec:
+  request: ${REQUEST}
+  signerName: kubernetes.io/kube-apiserver-client
+  usages:
+  - client auth
+EOF
+
+kubectl certificate <approve|decline> <username>
+kubectl get csr <username> -o jsonpath='{.status.certificate}' | base64 -d
