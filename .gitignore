@@ -1,3 +1,7 @@
 # IntelliJ project files
 .idea/
 .vscode
+
+# tmp and work files
+tmp
+work
