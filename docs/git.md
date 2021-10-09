@@ -10,3 +10,12 @@ git rebase master
 git add .
 git rebase --continue
 git push --force
+
+## git внутри
+
+git cat-file -p <hash> - вернет описание хэш файла (blob/tree/commit)
+
+# submodules
+git submodule sync --recursive
+git submodule update --init --recursive
+git submodule update --remote
