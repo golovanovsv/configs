@@ -133,10 +133,18 @@ else
     PROMPT="${fg_light_cyan}[${user_part}${fg_light_cyan}:${fg_light_green}%~${fg_light_cyan}]${eop_part}"
 fi
 
-# Настройка альясов
+# Настройка альясов (common)
 alias su="su -m"
-alias grep="grep --color=auto"
-alias ip="ip -color=auto"
+
+grep --color &> /dev/null
+if [[ $? -eq 0 ]]; then
+    alias grep="grep --color=auto"
+fi
+
+ip --color &> /dev/null
+if [[ $? -eq 0 ]]; then
+    alias ip="ip -color=auto"
+fi
 
 if [[ -f /usr/bin/bat ]]; then
     alias cat="/usr/bin/bat -n"
