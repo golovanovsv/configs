@@ -21,6 +21,7 @@ config set client-output-buffer-limit "slave 1073741824 1073741824 0" # Буфе
 config set client-output-buffer-limit "slave 1610612736 1610612736 0" # Буфер для slave 1.5Gb
 
 info replication
+client list
 
 # Информация по памяти
 redis-cli info memory

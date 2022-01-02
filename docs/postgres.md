@@ -111,6 +111,11 @@ select pg_drop_replication_slot('<name>');
 Расширения включаются в конкретных БД и реплицируются с бинарной репликацией.
 Необходимо подключение расширений параметром shared_preload_libraries в postgres.conf.
 SELECT * FROM pg_extension;
+SELECT * FROM pg_available_extensions
+
+# for bioauth
+# pg_trgm
+# btree_gin
 
 ## Блокировки
 
@@ -266,3 +271,12 @@ patronictl -c postgres.yml reinit airflow-ml-db airflow-ml-db-1
 CREATE INDEX by_date_stfs ON public.stfs_data (
   created_at DESC
 )
+
+## Конфиги
+
+SHOW config_file;
+select pg_reload_conf();
+
+select name,setting from pg_settings;
+SHOW <param-name>;
+SET <param-name> TO <value>;

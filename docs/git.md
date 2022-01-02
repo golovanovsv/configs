@@ -3,13 +3,25 @@
 git branch --merged | egrep -v "(^\*|master|dev)" | xargs git branch -d
 
 ## rebase
-
 git checkout <branch>
 git rebase master
 <resolve conflicts>
 git add .
 git rebase --continue
 git push --force
+
+git rebase --ineractive HEAD~1
+r - отредактировать commit-massage
+
+
+# changes in merge
+git merge --no-commit origin/FFMSK-666666
+<edit readme.md>
+git add docs/readme.md
+git commit
+
+## cherry-pick
+git cherry-pick <commit-sha> - поместит коммит в текущий HEAD
 
 ## git внутри
 
@@ -19,3 +31,9 @@ git cat-file -p <hash> - вернет описание хэш файла (blob/t
 git submodule sync --recursive
 git submodule update --init --recursive
 git submodule update --remote
+
+# remove submodules
+Delete the relevant line from the .gitmodules file.
+Delete the relevant section from .git/config.
+Run git rm --cached path_to_submodule (no trailing slash).
+Commit and delete the now untracked submodule files.

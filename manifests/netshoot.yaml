@@ -12,6 +12,9 @@ spec:
       labels:
         app: netshoot
     spec:
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
       # affinity:
       #   nodeAffinity:
       #     requiredDuringSchedulingIgnoredDuringExecution:

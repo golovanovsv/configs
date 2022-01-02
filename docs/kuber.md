@@ -38,6 +38,9 @@ kubectl label node k0 node-role.kubernetes.io/ingress-
 kubectl api-versions
 kubectl get cs
 
+# kubectl docs
+kubectl explain pod.spec.containers
+
 # kubeadm
 sudo kubeadm init --node-name k0.xaddr.ru --kubernetes-version 1.16 --pod-network-cidr=10.244.0.0/20 --upload-certs --control-plane-endpoint 5.189.0.215
 sudo kubeadm init --node-name k0.xaddr.ru --upload-certs --config /home/reptile/cluster.yml
@@ -48,6 +51,9 @@ sudo kubeadm join --pod-network-cidr=10.244.0.0/24
 kubeadm join 5.189.0.215:6443 [--control-plane] --token <token> --discovery-token-ca-cert-hash <dtoken>
 
 [config.yaml](https://godoc.org/k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/v1beta2)
+
+# CIDRS
+kubectl cluster-info dump | jq '.items[0].spec.podCIDRs'
 
 # kubeadm upload certs
 
@@ -143,3 +149,39 @@ EOF
 
 kubectl certificate <approve|decline> <username>
 kubectl get csr <username> -o jsonpath='{.status.certificate}' | base64 -d
+
+openssl req -batch -nodes -new -newkey rsa:4096 -sha512 -out ingress0.csr -keyout ingress0.key -subj "/CN=system:node:ingress0/O=system:nodes"
+
+export REQUEST=$(base64 -w 0 ingress0.csr)
+cat << EOF | kubectl apply -f -
+apiVersion: certificates.k8s.io/v1
+kind: CertificateSigningRequest
+metadata:
+  name: ingress0
+spec:
+  request: ${REQUEST}
+  signerName: kubernetes.io/kube-apiserver-client-kubelet
+  usages:
+  - client auth
+  - key encipherment
+  - digital signature
+EOF
+
+kubectl get csr ingress0 -o jsonpath='{.status.certificate}' | base64 -d
+
+# kubeadm config
+apiVersion: kubeadm.k8s.io/v1beta1
+kind: ClusterConfiguration
+kubernetesVersion: stable
+controlPlaneEndpoint: "192.168.0.1:6443"
+apiServer:
+  # certSANs:
+  #  - "192.168.0.1"
+  extraArgs:
+    anonymous-auth: "false"
+    audit-log-path: /var/log/k8s.log
+controllerManager: {}
+scheduler: {}
+etcd:
+  local:
+    dataDir: "/var/lib/k8s-etcd"

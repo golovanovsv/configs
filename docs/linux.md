@@ -61,6 +61,8 @@ lvextend -L[+2G|12G|+100%FREE] /dev/vg00/home
 lvremove /dev/vg00/home
 lvcreate -L3G -nredis-mibank fastssd
 
+lvreduce -L30G /dev/vg0/root 
+
 ## yum
 yum list installed
 yum --showduplicates list <package>
@@ -70,7 +72,7 @@ key generation:
 ssh-keygen -t rsa -b 4096 -C "comment" -f <output-name>
 
 check key in ssh-agent:
-ssh-agent -L
+ssh-add -L
 
 port-forwarding:
 ssh -L local_socket:remote_socket
@@ -140,6 +142,11 @@ cpu:
   echo 1 > /sys/devices/system/cpu/cpu*/online
 
 ## JQ
+jq '.|keys' // Получить только названия ключей указанного уровня
+jq '.|map_values(keys)' // Получить только названия ключей указанного уровня и названия их подключей
+jq '.monitoring[] | "\(.key) \(.value)" // Вывести значения ключей в консоль
+
+## JQ
 aws ec2 describe-instances | ./jq '.Reservations[].Instances[] | "\(.NetworkInterfaces[].PrivateIpAddress) \(.State.Name)"'
 aws ec2 describe-instances | ./jq '.Reservations[].Instances[] | select(.State.Name=="running") | .NetworkInterfaces[].PrivateIpAddress' | sed 's/\"//g'
 # Получить имена виртуалок, подключенных к subnet-id
@@ -164,13 +171,42 @@ sync; echo 3 | sudo tee /proc/sys/vm/drop_caches
 
 ## Wiregard
 apt install wireguard
-wg genkey | tee /etc/wireguard/privatekey | wg pubkey | tee /etc/wireguard/publickey
+wg genkey | sudo tee /etc/wireguard/privatekey | wg pubkey | sudo tee /etc/wireguard/publickey
 
-/etc/wireguard/wg0.conf
+# peer-1
+# /etc/wireguard/wg0.conf
+```bash
 [Interface]
-Address = 10.7.0.1/24
+# Адрес для интерфейса wg
+Address = 10.128.0.1/30
 ListenPort = 51820
-PrivateKey = wJrG7cBytw3xhEJGFyOT7CvhsGgfFDVPzVlhUrXWGUo=
+Table = off
+PrivateKey = <peer-1-private-key>
 
-systemctl enable wg-quick@wg0 && systemctl start wg-quick@wg0
-wg show wg0
+[Peer]
+PublicKey = <peer-2-public-key>
+# Перечень IP которые могут проходить через интерфейс
+# Так же для них будет создан статический маршрут если значение Table не равно off
+# Некоторые дистрибутивы не создают маршрут для 0.0.0.0/0 а некоторые создают
+AllowedIPs = 0.0.0.0/0
+# Если Endpoint не указан, то сервер работает в пассивном режиме и ждет входящих соединений
+Endpoint = <peer-2-ip>:<peer-2-port>
+```
+
+# peer-2
+# /etc/wireguard/wg0.conf
+```bash
+[Interface]
+Address = 10.128.0.2/30
+Table = off
+PrivateKey = <peer-2-private-key>
+
+[Peer]
+PublicKey = <peer-1-public-key>
+AllowedIPs = 0.0.0.0/0
+Endpoint = <peer-1-ip>:<peer-1-port>
+PersistentKeepalive = 25
+```
+
+# sudo systemctl enable wg-quick@wg0 && sudo systemctl start wg-quick@wg0
+# sudo systemctl restart wg-quick@wg0
