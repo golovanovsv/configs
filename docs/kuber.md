@@ -17,53 +17,79 @@ kubectl -n kube-system describe endpoints kube-scheduler # who is leader
 ## list all images in cluster
 kubectl get pods --all-namespaces -o jsonpath="{..image}" | tr -s '[[:space:]]' '\n' | sort | uniq -c | sort -gr
 
+## some resources
 kubectl get mutatingwebhookconfiguration
 kubectl get ValidatingWebhookConfiguration
 kubectl get endpoints
 kubectl get CSINode
 kubectl get csidrivers
+kubectl api-versions
+kubectl get cs
 
-kubectl rollout restart deployment/
+kubectl rollout restart deployment/daemonset
 
 # kubectl systems
 kubectl taint nodes --all node-role.kubernetes.io/master-
 kubectl taint nodes --all node-role.kubernetes.io/master:NoSchedule-
 kubectl taint node k0 node-role.kubernetes.io/master='':NoSchedule
-
-kubectl drain <node> [--ignore-daemonsets]
-
 kubectl label node k0 node-role.kubernetes.io/ingress=true
 kubectl label node k0 node-role.kubernetes.io/ingress-
 
-kubectl api-versions
-kubectl get cs
+kubectl drain <node> [--ignore-daemonsets]
 
 # kubectl docs
 kubectl explain pod.spec.containers
 
 # kubeadm
-sudo kubeadm init --node-name k0.xaddr.ru --kubernetes-version 1.16 --pod-network-cidr=10.244.0.0/20 --upload-certs --control-plane-endpoint 5.189.0.215
-sudo kubeadm init --node-name k0.xaddr.ru --upload-certs --config /home/reptile/cluster.yml
+sudo kubeadm init --node-name k0.xaddr.ru --kubernetes-version 1.22 --pod-network-cidr=10.244.0.0/20 --upload-certs --control-plane-endpoint 5.189.0.215
+sudo kubeadm init --node-name k0.xaddr.ru --upload-certs --config cluster.yaml
+
+[cluster.yaml](https://godoc.org/k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/v1beta2)
+```bash
+cat << EOF > cluster.yaml
+apiVersion: kubeadm.k8s.io/v1beta2
+kind: ClusterConfiguration
+kubernetesVersion: stable
+clusterName: cluster-name
+controlPlaneEndpoint: "192.168.217.100:6443"
+networking:
+  dnsDomain: cluster.local
+  podSubnet: 10.255.0.0/17
+  serviceSubnet: 10.255.128.0/17
+etcd:
+  local:
+    dataDir: /var/lib/etcd
+  extraArgs:
+    # election-timeout: 1000
+    snapshot-count: 10000
+apiServer:
+  timeoutForControlPlane: 4m0s
+  extraArgs:
+    audit-log-path: /var/log/k8s.log
+    authorization-mode: Node,RBAC
+---
+kind: KubeletConfiguration
+apiVersion: kubelet.config.k8s.io/v1beta1
+cgroupDriver: systemd
+---
+kind: KubeProxyConfiguration
+apiVersion: kubeproxy.config.k8s.io/v1alpha1
+mode: ipvs
+EOF
+```
 sudo kubeadm token create --print-join-command
-
-sudo kubeadm join --pod-network-cidr=10.244.0.0/24
-
-kubeadm join 5.189.0.215:6443 [--control-plane] --token <token> --discovery-token-ca-cert-hash <dtoken>
-
-[config.yaml](https://godoc.org/k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/v1beta2)
-
+sudo kubeadm init phase upload-certs --upload-certs
 # CIDRS
 kubectl cluster-info dump | jq '.items[0].spec.podCIDRs'
-
-# kubeadm upload certs
-
-sudo kubeadm init phase upload-certs --upload-certs
 
 # kubeadm upgrade
 Обновляться можно только на одну версию. Таким образом необходимо:
 - Установить последний kubeadm следующей версии: `apt policy | grep kubeadm; apt install kubeadm=<new version>`
 - Обновить control plane на каждом мастере: `kubeadm upgrade plan; kubeadm upgrade apply <new version>`
 - Обновить kubelet-ы: `apt install kubelet=<new version>`
+
+# calico
+kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
 
 # prometheus operator
 
@@ -92,6 +118,12 @@ kubectl apply -f https://raw.githubusercontent.com/nginxinc/kubernetes-ingress/m
 kubectl apply -f https://raw.githubusercontent.com/nginxinc/kubernetes-ingress/master/deployments/deployment/nginx-ingress.yaml
 
 kubectl apply -f https://raw.githubusercontent.com/nginxinc/kubernetes-ingress/master/deployments/service/nodeport.yaml
+
+# default ingress-class
+```bash
+annotations:
+ingressclass.kubernetes.io/is-default-class: "true"
+```
 
 # Cert manager
 kubectl create namespace cert-manager
@@ -122,9 +154,6 @@ sudo apt-get install -y kubelet kubeadm kubectl
 
 ## Garbage collecting
 
-## API
-ingress: extensions/v1beta1 >= 1.14 networking.k8s.io/v1beta1
-
 ### Auth in API
 export TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
 curl -k -H "Authorization: Bearer $TOKEN" https://kubernetes.default.svc
@@ -132,14 +161,15 @@ curl -k -H "Authorization: Bearer $TOKEN" https://kubernetes.default.svc
 # Auth
 ## via cert
 
-openssl req -batch -nodes -new -newkey rsa:4096 -sha512 -out <username>.csr -keyout <username>.key -subj "/CN=<username>/O=<org>"
+export USERNAME=username
+openssl req -batch -nodes -new -newkey rsa:4096 -sha512 -out ${USERNAME}.csr -keyout ${USERNAME}.key -subj "/CN={$USERNAME}/O=MIB"
 
-export REQUEST=$(base64 -w 0 <username>.csr)
-cat << EOF | kubectl apply -f -
+export REQUEST=$(base64 -w 0 $USERNAME.csr)
+cat << EOF | sudo kubectl --kubeconfig=/etc/kubernetes/admin.conf apply -f -
 apiVersion: certificates.k8s.io/v1
 kind: CertificateSigningRequest
 metadata:
-  name: <username>
+  name: ${USERNAME}
 spec:
   request: ${REQUEST}
   signerName: kubernetes.io/kube-apiserver-client
@@ -147,41 +177,6 @@ spec:
   - client auth
 EOF
 
-kubectl certificate <approve|decline> <username>
-kubectl get csr <username> -o jsonpath='{.status.certificate}' | base64 -d
-
-openssl req -batch -nodes -new -newkey rsa:4096 -sha512 -out ingress0.csr -keyout ingress0.key -subj "/CN=system:node:ingress0/O=system:nodes"
-
-export REQUEST=$(base64 -w 0 ingress0.csr)
-cat << EOF | kubectl apply -f -
-apiVersion: certificates.k8s.io/v1
-kind: CertificateSigningRequest
-metadata:
-  name: ingress0
-spec:
-  request: ${REQUEST}
-  signerName: kubernetes.io/kube-apiserver-client-kubelet
-  usages:
-  - client auth
-  - key encipherment
-  - digital signature
-EOF
-
-kubectl get csr ingress0 -o jsonpath='{.status.certificate}' | base64 -d
-
-# kubeadm config
-apiVersion: kubeadm.k8s.io/v1beta1
-kind: ClusterConfiguration
-kubernetesVersion: stable
-controlPlaneEndpoint: "192.168.0.1:6443"
-apiServer:
-  # certSANs:
-  #  - "192.168.0.1"
-  extraArgs:
-    anonymous-auth: "false"
-    audit-log-path: /var/log/k8s.log
-controllerManager: {}
-scheduler: {}
-etcd:
-  local:
-    dataDir: "/var/lib/k8s-etcd"
+kubectl certificate approve ${USERNAME}
+kubectl get csr ${USERNAME} -o jsonpath='{.status.certificate}'
+kubectl get csr ${USERNAME} -o jsonpath='{.status.certificate}' | base64 -d

@@ -100,6 +100,15 @@ db.users.updateOne({ _id: "f5846a32-683a-44b5-829d-9f19f9163dd8"}, { $set: { "ro
 
 # Replication
 rs.initiate()
+rs.initiate(
+  {
+    _id: "mall",
+    members: [
+      {_id: 0, host: "192.168.218.8:27017" },
+      {_id: 1, host: "192.168.219.8:27017" }
+    ]
+  }
+)
 rs.add( {host: "<host>:<port>", priority: 0, hidden: true} )
 rs.addArb("<host>:<port>")
 rs.remove("<hostname>:<port>")

@@ -136,13 +136,11 @@ fi
 # Настройка альясов (common)
 alias su="su -m"
 
-grep --color &> /dev/null
-if [[ $? -eq 0 ]]; then
+if [[ $(grep --color &> /dev/null) -eq 0 ]]; then
     alias grep="grep --color=auto"
 fi
 
-ip --color &> /dev/null
-if [[ $? -eq 0 ]]; then
+if [[ $(ip --color &> /dev/null) -eq 0 ]]; then
     alias ip="ip -color=auto"
 fi
 
@@ -167,6 +165,14 @@ elif [[ ${os} == "FreeBSD" ]]; then
 	alias ls="ls -allh -G"
 else
 	alias ls="ls -allh"
+fi
+
+# Настройка альясов (kubectl)
+if [[ $(command -v kubectl &> /dev/null; echo $?) -eq 0 ]]; then
+    alias k='kubectl '
+    alias ksn='_f(){k get namespace $1 > /dev/null; if [ $? -eq 1 ]; then return $?; fi;  k config set-context $(k config current-context) --namespace=$1; echo "Namespace: $1"};_f'
+    alias kg='kubectl get '
+    alias kgp='kubectl get po'
 fi
 
 # Заголовки для терминала

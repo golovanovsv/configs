@@ -2,6 +2,14 @@
 
 git branch --merged | egrep -v "(^\*|master|dev)" | xargs git branch -d
 
+## Edit last commit
+git commit --amend -m "Updated message for the previous commit"
+git commit --amend --no-edit
+
+## Revert one commit
+git revert [--edit] <commit>
+--edit - edit commit message
+
 ## rebase
 git checkout <branch>
 git rebase master
