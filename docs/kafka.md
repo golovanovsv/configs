@@ -16,11 +16,24 @@ Consumer является частью consumer group. Группа имеет �
 
 Так как каждая партиция обрабатывается одним уникальным консьюмером, то только он может сдвинуть указатель чтения после успешной обработки сообщения!
 
+# unset KAFKA_OPTS
+# unset JMX_PORT
 kafka-topics.sh --bootstrap-server <kafka>:<port> \
   --create \
   --topic <name> \
   --partitions 1 \
-  --replication-factor 1
+  --replication-factor 1 \
+  --config retention.ms=60000
+
+kafka-topics.sh --bootstrap-server <kafka>:<port> \
+  --alter \
+  --topic <name> \
+  --partitions 40 \
+  --replication-factor 2
+
+kafka-topics.sh --bootstrap-server <kafka>:<port> \
+  --delete \
+  --topic <name>
 
 kafka-topics.sh --bootstrap-server <kafka>:<port> --list
 
@@ -39,8 +52,9 @@ kafka-consumer-groups.sh --bootstrap-server <kafka>:<port> --group <group-name> 
 ## retentions
 log.retentions.check.interval.ms=300000 # Периоды проверки партиций
 
-kafka-configs.sh --bootstrap-server <kafka>:<port> --entity-type topics --entity-name <name> --alter -add-config retention.ms=60000
-kafka-configs.sh --bootstrap-server <kafka>:<port> --entity-type topics --entity-name <name> --alter -add-config segment.ms=10000
+kafka-configs.sh --bootstrap-server <kafka>:<port> --entity-type topics --entity-name <name> --alter --add-config retention.ms=60000
+kafka-configs.sh --bootstrap-server <kafka>:<port> --entity-type topics --entity-name <name> --alter --add-config segment.ms=10000
+kafka-configs.sh --bootstrap-server <kafka>:<port> --entity-type topics --entity-name <name> --alter --delete-config segment.ms=10000
 
 retention.ms - минимальное время хранения данных
 retention.bytes - максимальный размер партиции на диске
@@ -60,6 +74,9 @@ cleanup.policy=compact,delete # так тоже можно, работают о�
 zookeeper-shell.sh <server>:<port>
 ls /brokers/ids     # Список подключенных брокеров
 stat /brokers/ids/0 # Статистика ключа в zk
+
+./bin/zkCli.sh ls /brokers/(ids | topics)
+./bin/zkCli.sh get /brokers/ids/<id>
 
 ## Что стоит мониторить
 Сеть, диски, баланс нагрузки партиций топиков по брокерам.

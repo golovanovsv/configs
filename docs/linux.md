@@ -61,6 +61,9 @@ lvextend -L[+2G|12G|+100%FREE] /dev/vg00/home
 lvremove /dev/vg00/home
 lvcreate -L3G -nredis-mibank fastssd
 
+lvcreate -T -L 100G storage/thin
+lvcreate -T -V 200G storage/thin -n test
+
 lvreduce -L30G /dev/vg0/root 
 
 ## yum
@@ -146,6 +149,8 @@ jq '.|keys' // Получить только названия ключей ук�
 jq '.|map_values(keys)' // Получить только названия ключей указанного уровня и названия их подключей
 jq '.monitoring[] | "\(.key) \(.value)" // Вывести значения ключей в консоль
 
+jq '.items[] | select(."nvidia.com/gpu" != null)|."nvidia.com/gpu"'
+
 ## JQ
 aws ec2 describe-instances | ./jq '.Reservations[].Instances[] | "\(.NetworkInterfaces[].PrivateIpAddress) \(.State.Name)"'
 aws ec2 describe-instances | ./jq '.Reservations[].Instances[] | select(.State.Name=="running") | .NetworkInterfaces[].PrivateIpAddress' | sed 's/\"//g'
@@ -210,3 +215,21 @@ PersistentKeepalive = 25
 
 # sudo systemctl enable wg-quick@wg0 && sudo systemctl start wg-quick@wg0
 # sudo systemctl restart wg-quick@wg0
+
+# console resolution
+## extlinux
+```bash
+/boot/extlinux.conf:
+nomodeset -> video=1280x720
+```
+
+## grub
+```
+/etc/default/grub
+remove nomodeset
+add:
+GRUB_GFXMODE=1280x720
+GRUB_GFXPAYLOAD=1280x720
+
+update-grub
+```

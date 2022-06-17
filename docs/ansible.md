@@ -21,6 +21,8 @@ list[dicts] | map(attribute='element') | list
   no_log: true
 
 ### vars
+ansible_all_ipv4_addresses
+ansible_default_ipv4.address
 ansible_pkg_mgr: systemd|upstart|...
 ansible_os_family: RedHat|Debian
 ansible_distribution: OracleLinux|Ubuntu

@@ -10,6 +10,9 @@ git commit --amend --no-edit
 git revert [--edit] <commit>
 --edit - edit commit message
 
+##
+git branch -d -r origin/<remote branch name>
+
 ## rebase
 git checkout <branch>
 git rebase master
@@ -41,7 +44,7 @@ git submodule update --init --recursive
 git submodule update --remote
 
 # remove submodules
+Run git rm --cached path_to_submodule (no trailing slash).
 Delete the relevant line from the .gitmodules file.
 Delete the relevant section from .git/config.
-Run git rm --cached path_to_submodule (no trailing slash).
 Commit and delete the now untracked submodule files.

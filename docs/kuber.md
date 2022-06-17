@@ -180,3 +180,8 @@ EOF
 kubectl certificate approve ${USERNAME}
 kubectl get csr ${USERNAME} -o jsonpath='{.status.certificate}'
 kubectl get csr ${USERNAME} -o jsonpath='{.status.certificate}' | base64 -d
+
+## private registry
+kubectl -n production create secret generic selectel-k8s \
+    --from-file=.dockerconfigjson=/home/reptile/.docker/selectel-k8s.json \
+    --type=kubernetes.io/dockerconfigjson

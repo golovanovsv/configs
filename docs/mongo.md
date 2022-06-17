@@ -120,3 +120,11 @@ db.oplog.rs.stats().maxSize/1024/1024/1024
 
 oplog является локальным параметром сервера. Не реплицируется.
 db.adminCommand({replSetResizeOplog: 1, size: <size-in-mb>})
+
+# force
+cfg = rs.conf();
+cfg.members[3].host = "172.30.37.13:27017"; // Меняем IP у hidden (восстановление из бэкапа)
+cfg.members[3].hidden = false; // Выключаем признак hidden
+cfg.members[3].priority = 1; // Позволяем учавствовать в выборах
+cfg.members.splice(0,3); // Удаляем 3 элемента начиная с нулевого
+rs.reconfig(cfg, {force: true}); // Принудительно применяем новый конфиг
