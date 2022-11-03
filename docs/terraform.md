@@ -4,7 +4,7 @@ ln -s ../lib/backend.tf backend.tf
 
 # Start
 terraform init \
-  -backend-config="bucket=${S#BUCKEN_NAME} \
+  -backend-config="bucket=${S3BUCKET_NAME} \
   -backend-config="region=${S3BUCKET_REGION} \
   -backend-config="key=${BACKEND_CONFIG} \
   -get=true \

@@ -18,5 +18,24 @@ acme.sh --issue \
   --key-file /etc/letsencrypt/live/example.com/privkey.pem \
   --fullchain-file /etc/letsencrypt/live/example.com/fullchain.pem
 
+## DNS Manual
+acme.sh --issue \
+  --dns -yes-I-know-dns-manual-mode-enough-go-ahead-please \
+  -d '*.example.com' \
+  -d 'example.com' \
+  --cert-file /etc/letsencrypt/live/example.com/cert.pem \
+  --key-file /etc/letsencrypt/live/example.com/privkey.pem \
+  --fullchain-file /etc/letsencrypt/live/example.com/fullchain.pem
+
+Добавить нужный TXT.
+
+acme.sh --issue --renew \
+  --dns -yes-I-know-dns-manual-mode-enough-go-ahead-please \
+  -d '*.example.com' \
+  -d 'example.com' \
+  --cert-file /etc/letsencrypt/live/example.com/cert.pem \
+  --key-file /etc/letsencrypt/live/example.com/privkey.pem \
+  --fullchain-file /etc/letsencrypt/live/example.com/fullchain.pem
+
 ## renewal
 acme.sh --renew-all

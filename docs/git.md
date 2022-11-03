@@ -10,8 +10,9 @@ git commit --amend --no-edit
 git revert [--edit] <commit>
 --edit - edit commit message
 
-##
-git branch -d -r origin/<remote branch name>
+## Delete branch
+git branch -d <branch-name>
+git branch -d -r origin/<remote branch-name>
 
 ## rebase
 git checkout <branch>
