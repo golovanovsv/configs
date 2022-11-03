@@ -47,11 +47,13 @@ sudo kubeadm init --node-name k0.xaddr.ru --upload-certs --config cluster.yaml
 [cluster.yaml](https://godoc.org/k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/v1beta2)
 ```bash
 cat << EOF > cluster.yaml
+# https://kubernetes.io/docs/reference/config-api/kubeadm-config.v1beta3/
 apiVersion: kubeadm.k8s.io/v1beta2
 kind: ClusterConfiguration
 kubernetesVersion: stable
 clusterName: cluster-name
 controlPlaneEndpoint: "192.168.217.100:6443"
+# imageRepository: "<3-rd party repo>"
 networking:
   dnsDomain: cluster.local
   podSubnet: 10.255.0.0/17
@@ -67,6 +69,40 @@ apiServer:
   extraArgs:
     audit-log-path: /var/log/k8s.log
     authorization-mode: Node,RBAC
+---
+apiVersion: kubeadm.k8s.io/v1beta3
+kind: InitConfiguration
+# Ключ, для закрытия загружаемых сертификатов
+certificateKey: "<key>"
+# Список начальных токенов
+bootstrapTokens: {}
+nodeRegistration:
+  criSocket: "/var/run/docker.sock"
+  kubeletExtraArgs:
+    pod-infra-container-image: "<3-rd party repo>/pause:3.8"
+---
+apiVersion: kubeadm.k8s.io/v1beta3
+kind: JoinConfiguration
+# Развернуть на ноде master-сервер
+controlPlane:
+  # Ключ, для открытия загруженных сертификатов
+  certificateKey: "<key>"
+  localAPIEndpoint:
+    bindPort: 6443
+discovery:
+  bootstrapToken:
+    apiServerEndpoint: "192.168.217.100:6443"
+    # Токен и хэш CA для подключения
+    token: "<token>"
+    caCertHashes:
+      - "<ca-hash>"
+nodeRegistration:
+  taints:
+  - key: ingress
+    effect: NoSchedule
+
+  kubeletExtraArgs:
+    node-labels: "ingress=true,type=cpu"
 ---
 kind: KubeletConfiguration
 apiVersion: kubelet.config.k8s.io/v1beta1
