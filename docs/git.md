@@ -49,3 +49,7 @@ Run git rm --cached path_to_submodule (no trailing slash).
 Delete the relevant line from the .gitmodules file.
 Delete the relevant section from .git/config.
 Commit and delete the now untracked submodule files.
+
+# Config
+git config --global "http.https://gitlab.int".sslVerify false
+git config --global "http.https://gitlab.int".sslCAInfo /etc/ssl/ca.pem 

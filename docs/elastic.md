@@ -12,6 +12,17 @@ curl "localhost:9200/_cluster/settings?include_defaults" | jq '.persistent'
 
 DELETE /<index>
 
+# logging from docker
+# https://www.elastic.co/guide/en/beats/loggingplugin/8.5/log-driver-configuration.html
+docker plugin install elastic/elastic-logging-plugin:8.5.1
+```bash
+    logging:
+      driver: elastic/elastic-logging-plugin:8.5.1
+      options:
+        hosts: "http://172.16.121.8:9200"
+        index: "nginx-%{+yyyy.MM.dd}"
+```
+
 # Write
 curl -H "Content-Type: application/json" -XPOST "http://localhost:9200/indexname/typename/optionalUniqueId" \
   -d '{ "field" : "value" }'

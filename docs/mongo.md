@@ -39,6 +39,18 @@ mongodump --port 27018 -u admin --password DoociecuNgo1ee --authenticationDataba
 db.getUsers()
 db.changeUserPassword("monitor", "<pwd>")
 db.updateUser("monitor", { pwd: "<pwd>", passwordDigestor:"server"});
+db.createUser({
+  user: "logger",
+  pwd: "zPGLTSBzTOkLqcXc",
+  roles: [
+    { role: "root", db: "admin" },
+    { role: "userAdminAnyDatabase", db: "admin" },
+    { role: "dbAdminAnyDatabase", db: "admin" },
+    { role: "readWriteAnyDatabase", db: "admin" }
+  ],
+  mechanisms: ["SCRAM-SHA-256"],
+})
+db.dropUser("email")
 
 # Коллекции
 db.getCollectionNames()
@@ -113,6 +125,10 @@ rs.add( {host: "<host>:<port>", priority: 0, hidden: true} )
 rs.addArb("<host>:<port>")
 rs.remove("<hostname>:<port>")
 db.printReplicationInfo()
+
+# Set default concern
+db.adminCommand({ "getDefaultRWConcern" : 1 })
+db.adminCommand({ "setDefaultRWConcern" : 1, "defaultWriteConcern" : { "w" : 2 } })
 
 # Oplog size
 use local

@@ -6,8 +6,20 @@ ceph -v			# Версия
 
 ceph osd pool ls 			# Список пулов
 ceph osd pool stats <pool>	# Статистика пула
+ceph osd tree
+ceph osd in/out osd.0
+ceph osd crush remove osd.0
+ceph auth del osd.0
+ceph osd rm osd.0
 
 rdb -p <pool> list				# Список образов в пуле
 rdb -p <pool> info <image>		# Информация образа
 rdb -p <pool> status <image>	# Состояние образа, в том числе куда подключен
 rdb -p <pool> watch <image>		# Следить за событиями образа
+rdb -p <pool> device list
+rdb -p <pool> map <image-id>
+rbd -p <pool> create <name> --size 5G
+
+### disks
+lsblk /dev/vda --bytes --nodeps --pairs --paths --output SIZE,ROTA,RO,TYPE,PKNAME,NAME,KNAME,MOUNTPOINT,FSTYPE
+udevadm info --query=property /dev/vda

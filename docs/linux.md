@@ -150,6 +150,9 @@ jq '.|map_values(keys)' // Получить только названия клю
 jq '.monitoring[] | "\(.key) \(.value)" // Вывести значения ключей в консоль
 
 jq '.items[] | select(."nvidia.com/gpu" != null)|."nvidia.com/gpu"'
+jq '.items|length'
+jq '.items[]|select(.labels.lat!=null)|.id'
+jq '.items[]|select(.labels.lat==null)|.id'
 
 ## JQ
 aws ec2 describe-instances | ./jq '.Reservations[].Instances[] | "\(.NetworkInterfaces[].PrivateIpAddress) \(.State.Name)"'

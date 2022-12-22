@@ -7,9 +7,10 @@ kubectl -n <ns> create secret tls <name> --cert <certfile> --key <keyfile> --dry
 kubectl -n <ns> get pod <pod> -o yaml
 kubectl -n <ns> get pod <pod> -o json
 kubectl -n <ns> get pod <pod> -o jsonpath='{.spec.ports[?(@.name=="http")].nodePort}'
-kubectl get no -o jsonpath='{ range .items[*]}{.metadata.name}{"\t"}{.status.allocatable.cpu}:{.status.allocatable.memory}{"\t"}{.spec.taints[*].key}{"\n"}{ end }'
 kubectl -n <ns> get pod --sort-by='{.firstTimestamp}'
 kubectl -n <ns> get pod --sort-by=.metadata.creationTimestamp
+kubectl get no -o jsonpath='{ range .items[*]}{.metadata.name}{"\t"}{.status.allocatable.cpu}:{.status.allocatable.memory}{"\t"}{.spec.taints[*].key}{"\n"}{ end }'
+kubectl get no -o json | jq '.items[].status.allocatable | select(."nvidia.com/gpu" != null)|."nvidia.com/gpu"'
 
 # scheduller
 kubectl -n kube-system describe endpoints kube-scheduler # who is leader
