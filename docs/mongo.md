@@ -144,3 +144,19 @@ cfg.members[3].hidden = false; // Выключаем признак hidden
 cfg.members[3].priority = 1; // Позволяем учавствовать в выборах
 cfg.members.splice(0,3); // Удаляем 3 элемента начиная с нулевого
 rs.reconfig(cfg, {force: true}); // Принудительно применяем новый конфиг
+
+# remove arbiter
+Чтобы удалить арбитра нужно отобрать у всех SECONDARY голоса и приоритет
+cfg = rs.conf()
+cfg.members[x].votes = 0
+cfg.members[x].priority = 0
+rs.reconfig(cfg)
+
+Удалить арбитра(-ов)
+rs.remove("arbiter:port")
+
+Вернуть голоса и приоритеты особым образом
+cfg = rs.conf()
+cfg.members[x].votes = 1
+cfg.members[x].priority = 1
+rs.reconfigForPSASet(x,cfg)

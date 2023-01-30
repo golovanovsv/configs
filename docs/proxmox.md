@@ -9,3 +9,10 @@ qm set 900 --boot c --bootdisk scsi0
 qm set 900 --serial0 socket --vga serial0
 qm template 900
 ```
+
+# create user
+pveum user add admin@pve -comment "Admin user"
+pveum passwd admin@pve
+pveum group add admins -comment "System Administrators"
+pveum acl modify / -group admins -role Administrator
+pveum user modify admin@pve -group admin
