@@ -19,7 +19,7 @@ ip netns <ns-name> exec bash
 ip link add veth0 type veth peer name veth1
 ip link set veth0 up
 ip link set veth1 netns <ns-name>
-ip netns <ns-name> exec ip link set veth1 up
+ip netns exec <ns-name> ip link set veth1 up
 
 ## vxlan
 # VTEP - VXLAN Tunnel Endpoints

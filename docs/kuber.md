@@ -114,7 +114,7 @@ apiVersion: kubeproxy.config.k8s.io/v1alpha1
 mode: ipvs
 EOF
 ```
-sudo kubeadm token create --print-join-command
+sudo kubeadm token create --print-join-command --ttl 1h
 sudo kubeadm init phase upload-certs --upload-certs
 # CIDRS
 kubectl cluster-info dump | jq '.items[0].spec.podCIDRs'
