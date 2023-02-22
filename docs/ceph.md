@@ -16,9 +16,24 @@ rdb -p <pool> list				# Список образов в пуле
 rdb -p <pool> info <image>		# Информация образа
 rdb -p <pool> status <image>	# Состояние образа, в том числе куда подключен
 rdb -p <pool> watch <image>		# Следить за событиями образа
+rbd -p <pool> lock ls <image>
 rdb -p <pool> device list
 rdb -p <pool> map <image-id>
 rbd -p <pool> create <name> --size 5G
+
+## ceph users
+ceph dashboard ac-user-create <username> <password> administrator
+
+## ceph status (crashes)
+ceph crash ls
+ceph crash info <id>
+ceph crash archive <id>
+ceph crash archive-all
+
+## ceph status (MON_DISK_LOW)
+ceph config get mon mon_data_avail_warn
+ceph config set mon mon_data_avail_warn 10
+ceph config set mon mon_data_avail_crit 5
 
 ### disks
 lsblk /dev/vda --bytes --nodeps --pairs --paths --output SIZE,ROTA,RO,TYPE,PKNAME,NAME,KNAME,MOUNTPOINT,FSTYPE

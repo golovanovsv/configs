@@ -12,6 +12,8 @@ kubectl -n <ns> get pod --sort-by=.metadata.creationTimestamp
 kubectl get no -o jsonpath='{ range .items[*]}{.metadata.name}{"\t"}{.status.allocatable.cpu}:{.status.allocatable.memory}{"\t"}{.spec.taints[*].key}{"\n"}{ end }'
 kubectl get no -o json | jq '.items[].status.allocatable | select(."nvidia.com/gpu" != null)|."nvidia.com/gpu"'
 
+kubectl get no -l <selectors> -o json | jq '.items[] | select(.status.allocatable."nvidia.com/gpu" != null)|.status.allocatable."nvidia.com/gpu" + ": " + .metadata.name'
+
 # scheduller
 kubectl -n kube-system describe endpoints kube-scheduler # who is leader
 
