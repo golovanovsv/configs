@@ -1,5 +1,6 @@
 # Create template for cloud-init
-
+# https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img  # 22.04
+# https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img  # 20.04
 ```bash
 qm create 900 --memory 2048 --sockets 2 --cores 1 --cpu cputype=host --name ubuntu-2004 --net0 e1000,bridge=vmbr0
 qm importdisk 900 focal-server-cloudimg-amd64.img data --format qcow2
@@ -15,4 +16,4 @@ pveum user add admin@pve -comment "Admin user"
 pveum passwd admin@pve
 pveum group add admins -comment "System Administrators"
 pveum acl modify / -group admins -role Administrator
-pveum user modify admin@pve -group admin
+pveum user modify admin@pve -group admins

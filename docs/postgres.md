@@ -165,7 +165,7 @@ dpkg-reconfigure locales
 create database <db> LC_COLLATE = 'ru_RU.UTF-8' LC_CTYPE = 'ru_RU.UTF-8' TEMPLATE template0;
 create database "<db>" LC_COLLATE = 'ru_RU.UTF-8' LC_CTYPE = 'ru_RU.UTF-8' TEMPLATE template0;
 
-export PGPASSWORD=<passowrd>
+export PGPASSWORD=<password>
 pg_dump -h 192.168.100.2 -p 6432 -U <user> -O -x -Fc <db> | pg_restore --clean --if-exist --no-acl --no-owner --verbose -d <db> -U <user>
 pg_dump -h 192.168.100.2 -p 6432 -U <user> -O -x -Fd "<db>" | pg_restore --clean --if-exist --no-acl --no-owner --verbose -d "<db>" -U <user>
 
