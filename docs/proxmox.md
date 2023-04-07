@@ -17,3 +17,10 @@ pveum passwd admin@pve
 pveum group add admins -comment "System Administrators"
 pveum acl modify / -group admins -role Administrator
 pveum user modify admin@pve -group admins
+
+# fsck for qcow2
+modprobe nbd max_path=2
+qemu-nbd --connect=/dev/nbd0 <path-to-qcow2>
+fdisk -l /dev/nbd0
+fsck -y /dev/nbd0
+qemu-nbd --disconnect /dev/nbd0
