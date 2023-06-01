@@ -129,6 +129,14 @@ kubectl cluster-info dump | jq '.items[0].spec.podCIDRs'
 
 # calico
 kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.25.1/manifests/calico.yaml
+
+# cilium
+curl -L --fail --remote-name-all https://github.com/cilium/cilium-cli/releases/download/v0.13.2/cilium-linux-amd64.tar.gz
+cilium install --helm-set ipam.operator.clusterPoolIPv4PodCIDR="172.28.0.0/17"
+
+# argo
+kubectl -n argocd apply -f https://raw.githubusercontent.com/argoproj/argo-cd/v2.6.7/manifests/install.yaml
 
 # prometheus operator
 
@@ -200,15 +208,19 @@ curl -k -H "Authorization: Bearer $TOKEN" https://kubernetes.default.svc
 # Auth
 ## via cert
 
-export USERNAME=username
-openssl req -batch -nodes -new -newkey rsa:4096 -sha512 -out ${USERNAME}.csr -keyout ${USERNAME}.key -subj "/CN={$USERNAME}/O=MIB"
+export k8suser=username
+# days in openssl req may be ignored
+openssl req -batch -nodes -new -newkey rsa:4096 -days 1095 -sha512 -out ${k8suser}.csr -keyout ${k8suser}.key -subj "/CN=${k8suser}/O=MIB"
+export REQUEST=$(base64 -w 0 ${k8suser}.csr)
+# Если надо передать csr
+echo ${REQUEST} | tr -d '\n'
 
-export REQUEST=$(base64 -w 0 $USERNAME.csr)
+# Если сразу применять csr
 cat << EOF | sudo kubectl --kubeconfig=/etc/kubernetes/admin.conf apply -f -
 apiVersion: certificates.k8s.io/v1
 kind: CertificateSigningRequest
 metadata:
-  name: ${USERNAME}
+  name: ${k8suser}
 spec:
   request: ${REQUEST}
   signerName: kubernetes.io/kube-apiserver-client
@@ -216,9 +228,9 @@ spec:
   - client auth
 EOF
 
-kubectl certificate approve ${USERNAME}
-kubectl get csr ${USERNAME} -o jsonpath='{.status.certificate}'
-kubectl get csr ${USERNAME} -o jsonpath='{.status.certificate}' | base64 -d
+kubectl certificate approve ${k8suser}
+kubectl get csr ${k8suser} -o jsonpath='{.status.certificate}'
+kubectl get csr ${k8suser} -o jsonpath='{.status.certificate}' | base64 -d
 
 ## private registry
 kubectl -n production create secret generic selectel-k8s \
