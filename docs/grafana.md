@@ -37,3 +37,6 @@ irate(node_disk_read_time_seconds_total{device=~"(sd|vd)[a-z]"}[5m]) / irate(nod
 ## Disk read/write
 irate(node_disk_read_bytes_total{device=~"(sd|vd)[a-z]"}[2m])
 irate(node_disk_written_bytes_total{device=~"(sd|vd)[a-z]"}[2m])
+
+# Динамический максимум Gauge
+Делается при помощи `Transform` -> `Config from query results`

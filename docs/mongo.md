@@ -111,6 +111,8 @@ db.teams.remove({ _id: "stfs" })
 db.users.updateOne({ _id: "f5846a32-683a-44b5-829d-9f19f9163dd8"}, { $set: { "roles": ["FraudChiefOfficer", "ChiefRiskOfficer"] }})
 
 # Replication
+openssl rand -base64 756 > <path-to-keyfile>
+chmod 400 <path-to-keyfile>
 rs.initiate()
 rs.initiate(
   {
