@@ -36,3 +36,15 @@ ansible_lsb:
   release:
 
 ansible_hostname: hostname from facts
+
+### Динамические группы по ключу
+
+Модуль group_by создает группы по имени указанного ключа (key).
+```
+# role: www
+# role: app
+- group_by:
+    key: role | default("other")
+```
+
+Создаст группы www и app

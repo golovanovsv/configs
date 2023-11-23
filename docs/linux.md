@@ -4,6 +4,10 @@ Ubuntu:
 - bionic = 18.04
 - focal = 20.04
 
+## power mode (governor)
+cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+for i in {0..63}; do echo "performance" > /sys/devices/system/cpu/cpu${i}/cpufreq/scaling_governor; done
+
 ## mount
 sudo umount /test
 sudo umount /dev/sdb3
@@ -144,19 +148,31 @@ disks:
 cpu:
   echo 1 > /sys/devices/system/cpu/cpu*/online
 
-## JQ
+## JQ: filters
 jq '.|keys' // Получить только названия ключей указанного уровня
 jq '.|map_values(keys)' // Получить только названия ключей указанного уровня и названия их подключей
 jq '.monitoring[] | "\(.key) \(.value)" // Вывести значения ключей в консоль
 
-jq '.items[] | select(."nvidia.com/gpu" != null)|."nvidia.com/gpu"'
-jq '.items|length'
-jq '.items[]|select(.labels.lat!=null)|.id'
-jq '.items[]|select(.labels.lat==null)|.id'
+jq '.items[] | select(."nvidia.com/gpu" != null) | ."nvidia.com/gpu"'
+jq '.items | length'
+jq '.items[] | select(.labels.lat!=null) | .id'
+jq '.items[] | select(.labels.lat==null) | .id'
+jq '.items[0:100]
 
-## JQ
+## JQ: sort
+jq '.items[] | sort_by(.date)'
+
+## JQ: casts
+jq '.items[] | {id: .id, date: .date}' file.json      # dicts
+jq '[ .items[] | {id: .id, date: .date} ]' file.json  # [dict]
+
+## JQ: formatted output
+kubectl get --raw "/api/v1/nodes/tst-gpu109-f100/proxy/stats/summary" | jq '.pods[] | (.podRef.name) + ": " + (."ephemeral-storage".usedBytes | tostring)'
+
+## JQ: AWS
 aws ec2 describe-instances | ./jq '.Reservations[].Instances[] | "\(.NetworkInterfaces[].PrivateIpAddress) \(.State.Name)"'
 aws ec2 describe-instances | ./jq '.Reservations[].Instances[] | select(.State.Name=="running") | .NetworkInterfaces[].PrivateIpAddress' | sed 's/\"//g'
+
 # Получить имена виртуалок, подключенных к subnet-id
 aws ec2 describe-instances --filters Name=subnet-id,Values=subnet-1623465f | jq '.Reservations[].Instances[].Tags[] | select(.Key=="Name") | .Value'
 

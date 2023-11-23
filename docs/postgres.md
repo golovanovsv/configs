@@ -61,6 +61,7 @@ SELECT * FROM information_schema.role_table_grants WHERE grantee='<user>';
 ## Перенатройка в онлайне
 
 ALTER SYSTEM SET wal_level = replica;
+ALTER SYSTEM SET jit = off;
 
 ## Вычисление объемов
 

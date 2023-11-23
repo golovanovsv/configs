@@ -20,3 +20,15 @@ echo "
 ```
 
 Цветовые коды можно посмотреть [тут](https://github.com/golovanovsv/configs/blob/master/.zshrc#L34) или [тут](https://www.linuxquestions.org/questions/linux-software-2/adding-colors-to-your-motd-105038/#post914365)
+
+## pam
+
+Чтобы motd показывался при логине по ssh нужно, чтобы в /etc/pam.d/sshd были следующие параметры:
+
+```bash
+session    optional     pam_motd.so motd=/run/motd.dynamic
+session    optional     pam_motd.so noupdate
+```
+
+И включить использование PAM в sshd:
+1. /etc/ssh/sshd_config: `UsePAM yes`

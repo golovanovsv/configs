@@ -9,6 +9,13 @@ etcdctl \
   --endpoints https://127.0.0.1:2379 \
   member list
 
+etcdctl \
+  --cacert /etc/kubernetes/pki/etcd/ca.crt \
+  --cert /etc/kubernetes/pki/etcd/server.crt \
+  --key /etc/kubernetes/pki/etcd/server.key \
+  --endpoints https://127.0.0.1:2379 \
+move-leader <id>
+
 etcdctl cluster-health
 etcdctl endpoint status
 
