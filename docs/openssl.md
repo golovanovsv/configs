@@ -7,11 +7,23 @@ openssl req -x509 -new -nodes -key ca.key -sha256 -subj "/CN=kube-ca" -days 3650
 ## Create dhparm
 
 openssl dhparam -out /etc/nginx/ssl/dhparam 2048
+
+## Create selfdigned CA
+# via csr
+
+openssl genpkey -algorithm ed25519 -out private.key
+openssl req -new -nodes -key ca.key -out ca.csr
+openssl x509 -req -in ca.csr -signkey ca.key -days 3700 -out ca.crt
+
+# without csr
+
+openssl req -x509 -sha256 -days 3700 -nodes -newkey rsa:2048 -subj "/CN=demo.mlopshub.com/C=US/L=San Fransisco" -keyout ca.key -out ca.crt 
+
 ## Create selfsigned certificate
 
 openssl req -nodes -x509 -newkey rsa:4096 -keyout local.key -out local.pem -days 1825 -subj "/CN=Cybertonica gitlab server"
 
-## Create certificate
+## Create certificate via csr
 
 openssl genrsa -out kube-apiserver.key 2048
 openssl req -new -key kube-apiserver.key -out kube-apiserver.csr -config file.cnf
@@ -27,8 +39,8 @@ distinguished_name = dn
 
 [ dn ]
 C = RU
-ST = ST
-L = Moscow
+ST = State
+L = Location/City
 O = OrgName
 OU = OrgUnit
 CN = kube-ca
@@ -83,3 +95,8 @@ kubectl --kubeconfig controller-manager.conf config set-cluster zaddr --server="
 kubectl --kubeconfig controller-manager.conf config set-credentials "system:kube-controller-manager" --client-key="/etc/kubernetes/pki/kube-scheduller.key" --client-certificate="/etc/kubernetes/pki/kube-scheduller.crt" --embed-certs=true
 kubectl config --kubeconfig controller-manager.conf set-context zaddr --cluster=zaddr --user="system:kube-controller-manager"
 kubectl config --kubeconfig controller-manager.conf use-context zaddr
+
+## create key pair
+
+openssl genpkey -algorithm ed25519 -out private.key
+openssl pkey -in private.key -pubout -out public.key
