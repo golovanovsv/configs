@@ -37,4 +37,5 @@ ip link add <name> type vxlan \
   local <ip> \
   remote <ip> \     # Статический VTEP без использования муьтикаста
 
+bridge link                                              # Перечень vxlan
 bridge fdb append 00:00:00:00:00:00 dev <name> dst <ip>  # Дополнительный VTEP для vxlan

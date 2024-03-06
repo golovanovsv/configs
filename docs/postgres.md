@@ -19,7 +19,9 @@ pgcli - command line interface for Postgres with auto-completion and syntax
 
 ## Проверка активности
 
-SELECT * FROM pg_stat_activity; - список коннектов
+SELECT * FROM pg_stat_activity; - список коннектов (connect)
+SELECT count(pid) FROM pg_stat_activity; - число открытых соединений
+SELECT datname, usename, client_addr, client_hostname, state FROM pg_stat_activity;
 
 ## Отключение сессий
 
@@ -171,7 +173,7 @@ pg_dump -h 192.168.100.2 -p 6432 -U <user> -O -x -Fc <db> | pg_restore --clean -
 pg_dump -h 192.168.100.2 -p 6432 -U <user> -O -x -Fd "<db>" | pg_restore --clean --if-exist --no-acl --no-owner --verbose -d "<db>" -U <user>
 
 ## Очистка
-
+### Анализ таблицы и перестройка 
 VACUUM (VERBOSE, ANALYZE) "log"."error";
 
 vacuum full analyze log.error

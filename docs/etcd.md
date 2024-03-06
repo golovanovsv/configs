@@ -1,23 +1,36 @@
-etcd
+# etcd
 
-ETCDCTL_API=3 
+# common operations
 
-etcdctl \
-  --cacert /etc/kubernetes/pki/etcd/ca.crt \
-  --cert /etc/kubernetes/pki/etcd/server.crt \
-  --key /etc/kubernetes/pki/etcd/server.key \
-  --endpoints https://127.0.0.1:2379 \
-  member list
+export ETCDCTL_API=3
+export ETCDCTL_CACERT=/etc/kubernetes/pki/etcd/ca.crt
+export ETCDCTL_CERT=/etc/kubernetes/pki/etcd/peer.crt
+export ETCDCTL_KEY=/etc/kubernetes/pki/etcd/peer.key
+export ETCDCTL_ENDPOINTS=
 
-etcdctl \
-  --cacert /etc/kubernetes/pki/etcd/ca.crt \
-  --cert /etc/kubernetes/pki/etcd/server.crt \
-  --key /etc/kubernetes/pki/etcd/server.key \
-  --endpoints https://127.0.0.1:2379 \
-move-leader <id>
-
+etcdctl member list -w table
 etcdctl cluster-health
 etcdctl endpoint status
+etcdctl endpoint health
+
+etcdctl move-leader <id>
+etcdctl member update <member-id> --peer-urls="<new url>"
+
+# maintenance
+## member defragmentation
+## Команда выполняется на каждом участнике кластера отдельно ели не заданы ETCDCTL_ENDPOINTS
+
+etcdctl defrag
+
+## compaction
+## Сжатие выполняется сразу во всем кластере
+
+rev=$(etcdctl --endpoints=:2379 endpoint status --write-out="json" | egrep -o '"revision":[0-9]*' | egrep -o '[0-9].*')
+etcdctl compact $rev
+etcdctl defrag
+etcdctl alarm disarm
+
+# operations in docker
 
 docker exec -it 9643024b51ce etcdctl \
   --cacert /etc/kubernetes/pki/etcd/ca.crt \
@@ -26,9 +39,7 @@ docker exec -it 9643024b51ce etcdctl \
   --endpoints https://127.0.0.1:2379 \
 -w table member list
 
-etcdctl member update $(cat memeber_id) --peer-urls="<new url>"
+# curl oparations
 
-# --force-new-cluster
+curl --cacert ca.crt --cert peer.crt --key peer.key https://192.168.0.1:2380/members
 
-curl --cacert ca.crt --cert peer.crt --key peer.key https://192.168.218.2:2380
-https://192.168.218.2:2380/members
