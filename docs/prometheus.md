@@ -43,8 +43,11 @@ kube_pod_container_resource_limits_memory_bytes{pod="<pod-name>"}
 }
 
 ## Как отправить
-url="http://alertmanager.net/api/vi/alerts"
-curl -XPOST $url -d '[alert1, alert2]' 
+amtool --alertmanager.url=http://<alertmanager-url> \
+  alert add alertname=instance-down severity=critical instance="master-0" namespace="monitoring" \
+  --annotation=summary="instance master-0 is down!" \
+  --annotation=runbook_url="https://prometheus.com" \
+  --annotation=namespace="monitoring"
 
 ## Пример шаблонов alertmanager`а
 .GroupLabels - лейбы, по которым alertmanager группирует алерты
@@ -82,3 +85,15 @@ text: |-
 
   {{- end }}
 ```
+
+### Цикл по всем алертам:
+```bash
+{{- range .Alerts }}
+  {{ if .Labels.pod }}<b>pod</b>: <code>{{ .Labels.pod }}</code>
+  {{- else if .Labels.node -}}<b>server</b>: <code>{{ .Labels.node }}</code>
+  {{- else }}<b>server</b>: <code>{{ .Labels.instance }}</code>
+  {{- end }}
+{{- end }}
+```
+
+Дополнительно можно пройтись по всем возникшим алертам `.Alers.Firing` или по разрешенным `.Alerts.Resolved`
