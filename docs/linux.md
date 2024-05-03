@@ -13,6 +13,18 @@ sudo umount /test
 sudo umount /dev/sdb3
 sudo mount -o rw,remount -force /dev/sdb3 /test
 
+## system calls
+cat /proc/kallsyms - list of all system calls
+cat /sys/kernel/debug/tracing/kprobe_events - зонды eBPF (kprobe - зонды ядра, uprobe - пользовательские зонды)
+
+## bpftool
+
+bpftool prog
+bpftool prog show id 406
+bpftool prog dump xlated/jited id 406
+
+tc filter show dev cilium_host egress/ingress
+
 ## Systemd
 systemd-delta --type=extended
 ntpq -pn
@@ -75,19 +87,22 @@ yum list installed
 yum --showduplicates list <package>
 
 ## ssh
-key generation:
+# key generation
 ssh-keygen -t rsa -b 4096 -C "comment" -f <output-name>
 
-check key in ssh-agent:
-ssh-add -L
-
-port-forwarding:
-ssh -L local_socket:remote_socket
-ssh -L [local_address:]local_port:host:hostport
+# key info
+ssh-keygen -l -f <file>
 
 # compare priv and pub keys
 ssh-keygen -l -f <private-key>
-ssh-keygen -l -f <publick-key>
+ssh-keygen -l -f <public-key>
+
+# check key in ssh-agent
+ssh-add -L
+
+# port-forwarding
+ssh -L local_socket:remote_socket
+ssh -L [local_address:]local_port:host:hostport
 
 ## rsync
 # -r - recursive

@@ -45,7 +45,6 @@ kafka-console-consumer.sh --topic <name> --bootstrap-server <kafka>:<port> \
   [--group <group-name>]
 
 # auto.offset.reset=earliest - работает только для новой группы
-
 kafka-consumer-groups.sh --bootstrap-server <kafka>:<port> --group <group-name> --describe
 kafka-consumer-groups.sh --bootstrap-server <kafka>:<port> --group <group-name> --reset-offsets --to-earliest --topic <name> --execute
 
@@ -83,3 +82,6 @@ stat /brokers/ids/0 # Статистика ключа в zk
 Отставание партиций от лидеров.
 Переизбрания лидеров.
 Время ответа брокера на фетчи.
+
+# Get topic config
+kafka-configs --bootstrap-server <KAFKA_SERVERS> --entity-type topics --entity-name <TOPIC_NAME> --describe --all

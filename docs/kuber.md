@@ -118,6 +118,7 @@ EOF
 ```
 sudo kubeadm token create --print-join-command --ttl 1h
 sudo kubeadm init phase upload-certs --upload-certs
+
 # CIDRS
 kubectl cluster-info dump | jq '.items[0].spec.podCIDRs'
 
@@ -139,7 +140,6 @@ cilium install --helm-set ipam.operator.clusterPoolIPv4PodCIDR="172.28.0.0/17"
 kubectl -n argocd apply -f https://raw.githubusercontent.com/argoproj/argo-cd/v2.6.7/manifests/install.yaml
 
 # prometheus operator
-
 objects:
 - Prometheus
 - ServiceMonitor - таргеты
@@ -192,12 +192,20 @@ sudo apt-get install -y kubelet kubeadm kubectl
 # kubelet params
 ## Out of resources
 ## https://kubernetes.io/docs/tasks/administer-cluster/out-of-resource/
+# default
+--eviction-hard=memory.available<100Mi,nodefs.available<10%,imagefs.available<15%
 --eviction-hard=memory.available<500Mi,nodefs.available<1Gi,imagefs.available<,nodefs.inodesFree=5000
 --eviction-hard=memory.available<5%,nodefs.available<5%,imagefs.available<5%
 --eviction-soft=memory.available<1.5Gi
 --eviction-soft-grace-period=2m30s
 --housekeeping-interval=10s
---system-reserved=memory=1.5G
+
+## node protection
+## system-reserved по-умолчанию не установлено
+--system-reserved=cpu=150m,memory=256Mi,pid=128
+
+## kube-reserved по-умолчанию не установлено
+--kube-reserved=cpu=150m,memrory=256Mi,pid=128
 
 ## Garbage collecting
 
