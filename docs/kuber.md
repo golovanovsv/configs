@@ -128,6 +128,24 @@ kubectl cluster-info dump | jq '.items[0].spec.podCIDRs'
 - Обновить control plane на каждом мастере: `kubeadm upgrade plan; kubeadm upgrade apply <new version>`
 - Обновить kubelet-ы: `apt install kubelet=<new version>`
 
+# kubeadm extra-sans
+kubectl -n kube-system get configmap kubeadm-config -o jsonpath='{.data.ClusterConfiguration}' > kubeadm.yaml
+kubeadm config upload from-file --config kubeadm.yaml
+```
+controlPlaneEndpoint: 172.17.147.10:6443
+apiServer:
+  certSANs:
+  - "extra-name.example.com"
+  - "1.1.1.1"
+```
+
+# Следующая команда по какой-то причине не умеет добавлять SANs
+# Мне кажется, что он берет параметры обновления с существующих сертификатов
+kubeadm certs renew apiserver
+
+# Поэтому нужно использовать следующую
+kubeadm init phase certs apiserver --config kubeadm.yaml
+
 # calico
 kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
 kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.25.1/manifests/calico.yaml
@@ -182,10 +200,19 @@ sudo update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
 sudo update-alternatives --set arptables /usr/sbin/arptables-legacy
 sudo update-alternatives --set ebtables /usr/sbin/ebtables-legacy
 
+# Старый репозиторий
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
 cat <<EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
 deb https://apt.kubernetes.io/ kubernetes-xenial main
 EOF
+
+# Новый репозиторий
+mkdir -p /etk/apt/keyrings
+curl -s https://pkgs.k8s.io/core:/stable:/v1.29/deb/Release.key | sudo tee /etc/apt/keyrings/kubernetes.asc
+cat <<EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
+deb [signed-by=/etc/apt/keyrings/kubernetes.asc] https://pkgs.k8s.io/core:/stable:/v1.29/deb/ /
+EOF
+
 sudo apt-get update
 sudo apt-get install -y kubelet kubeadm kubectl
 
