@@ -23,6 +23,7 @@ rbd -p <pool> lock ls <image>
 rdb -p <pool> device list
 rdb -p <pool> map <image-id>
 rbd -p <pool> create <name> --size 5G
+rbd showmapped
 rbd device unmap <device>
 
 ## ceph users

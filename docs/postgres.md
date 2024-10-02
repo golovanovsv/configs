@@ -15,6 +15,7 @@ pgcli - command line interface for Postgres with auto-completion and syntax
 \d  - 
 \dt *.* - список таблиц с указанием владельца
 \d+ *.* - посмотреть данные объекта
+\ddp - права доступа по-умолчанию
 \x  - вертикальный вывод данных (или добавить :G в конце запроса вместо ;)
 
 ## Проверка активности
@@ -104,6 +105,9 @@ select * from pg_replication_slots;
 
 Удаление слота репликации
 select pg_drop_replication_slot('<name>');
+
+Состояние реплики
+select * from pg_stat_wal_receiver;
 
 ## Состояние репликации
 
