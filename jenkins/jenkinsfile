@@ -1,0 +1,91 @@
+mmCommonChannel = 'devops-jenkins-notifications'
+
+environments = [
+    "stage": [
+        helm_ctx: "staging",
+        helm_ns: "namespace1"
+    ],
+    "prod": [
+        helm_ctx: "production",
+        helm_ns: "namespace2"
+    ]
+]
+
+pipeline {
+    triggers {
+        cron('H 8 * * 1-5')
+    }
+    options {
+        timestamps()
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+    }
+    environment {
+        HELM_CTX = environments["${params.ENVIRONMENT}"].helm_ctx
+        HELM_NS = environments["${params.ENVIRONMENT}"].helm_ns
+    }
+    parameters {
+        choice(
+            name: "ENVIRONMENT",
+            defaultValue: "stage",
+            choices: ["stage", "prod"]
+        )
+        string(
+            name: 'BRANCH',
+            defaultValue: 'master',
+            description: 'Ветка с кодом'
+        )
+        booleanParam(
+            name: 'DRY_RUN',
+            defaultValue: false,
+            description: 'Посмотреть результат'
+        )
+    }
+
+    stages {
+        stage('Prepare') {
+            steps {
+                script {
+                    buildName "#${env.BUILD_NUMBER} ${params.BRANCH} [${params.ENVIRONMENT}]"
+                    failOnNewParams()
+                    helmfileCommand = params.DRY_RUN ? 'diff' : 'apply'
+                }
+            }
+        }
+        stage('Pull') {
+            steps {
+                script {
+                    dir('dgctl') {
+                        sh(script: "echo Получаение внешних данных для: ${params.ENVIRONMENT}")
+                    }
+                }
+            }
+        }
+
+        stage('Update') {
+            steps {
+                dir('helmfile') {
+                    sh(script: "echo helmfile --kube-context=${env.HELM_CTX} -e staging -f deploy/all_services.yaml --context=1 ${helmfileCommand}")
+                }
+            }
+        }
+
+        stage('Post info') {
+            steps {
+                script {
+                    sh(script: "echo helm --kube-context=${env.HELM_CTX} -n ${env.HELM_NS} list -a")
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            script {
+                sh(script: "echo send mm notification: ${env.JOB_NAME} #${env.BUILD_NUMBER} (<${env.BUILD_URL}|Link to build>). Статус: ${currentBuild.result} ")
+            }
+        }
+        cleanup {
+            cleanWs()
+        }
+    }
+}
