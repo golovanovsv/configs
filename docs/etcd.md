@@ -10,8 +10,8 @@ export ETCDCTL_ENDPOINTS=
 
 etcdctl member list -w table
 etcdctl cluster-health
-etcdctl endpoint status
-etcdctl endpoint health
+etcdctl endpoint status -w table
+etcdctl endpoint health -w table
 
 etcdctl move-leader <id>
 etcdctl member update <member-id> --peer-urls="<new url>"
@@ -43,3 +43,15 @@ docker exec -it 9643024b51ce etcdctl \
 
 curl --cacert ca.crt --cert peer.crt --key peer.key https://192.168.0.1:2380/members
 
+# ETCDCTL_API=2
+etcdctl ls [-r/--recursive] /
+etcdctl mkdir /dir
+etcdctl get <key>
+etcdctl rm [-r/--recursive] /
+
+export ETCDCTL_API=3
+export ETCDCTL_CACERT=/etc/kubernetes/pki/etcd/ca.crt
+export ETCDCTL_CERT=/etc/kubernetes/pki/etcd/peer.crt
+export ETCDCTL_KEY=/etc/kubernetes/pki/etcd/peer.key
+
+etcdctl endpoint status -w table

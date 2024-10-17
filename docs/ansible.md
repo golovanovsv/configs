@@ -48,3 +48,8 @@ ansible_hostname: hostname from facts
 ```
 
 Создаст группы www и app
+
+### hostvars
+
+Модуль `set_fact` добавляет переменные в структуру hostvars.
+Поэтому к переменным одного севрера можно обращать с другого сервера.

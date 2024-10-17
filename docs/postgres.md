@@ -7,7 +7,7 @@ pgcli - command line interface for Postgres with auto-completion and syntax
 
 \?  - помощь
 \с  - соединиться с БД
-\du - список родей
+\du - список ролей (пользователи СУБД) с их атрибутами
 \l  - список БД
 \db - список tablespace
 \da - List of aggregate functions
@@ -15,8 +15,10 @@ pgcli - command line interface for Postgres with auto-completion and syntax
 \d  - 
 \dt *.* - список таблиц с указанием владельца
 \d+ *.* - посмотреть данные объекта
-\ddp - права доступа по-умолчанию
+\dp  - права доступа в контексте БД
+\ddp - права доступа по-умолчанию в контексте БД
 \x  - вертикальный вывод данных (или добавить :G в конце запроса вместо ;)
+\conninfo - информация о текущем подключении 
 
 ## Проверка активности
 
@@ -38,7 +40,7 @@ wait_event_type | wait_event
 select pg_terminate_backend(pid) from pg_stat_activity where usename='pgsql';
 
 ## Управление пользователями
-
+# Для роли с атрибутом SUPERUSER проверки доступа не выполняются
 CREATE USER <user>;
 ALTER USER <user> WITH PASSWORD '<password>';
 ALTER USER <user> WITH superuser createdb createrole replication bypassrls; 
@@ -46,6 +48,9 @@ GRANT ALL PRIVILEGES ON DATABASE <db> TO <user>;
 
 Место хранения информации о пользователях. Схема pg_catalog общая на инстанс.
 SELECT * FROM pg_catalog.pg_authid;
+
+## Удаленный доступ
+SELECT * FROM pg_hba_file_rules();
 
 ## Управление правами
 

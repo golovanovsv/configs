@@ -51,5 +51,7 @@ Delete the relevant section from .git/config.
 Commit and delete the now untracked submodule files.
 
 # Config
-git config --global "http.https://gitlab.int".sslVerify false
-git config --global "http.https://gitlab.int".sslCAInfo /etc/ssl/ca.pem 
+git config [--global] "http.https://gitlab.int".sslVerify false
+git config [--global] "http.https://gitlab.int".sslCAInfo /etc/ssl/ca.pem 
+git config [--global] user.name golovanovsv
+git config [--global] user.email golovanovsv@
