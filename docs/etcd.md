@@ -44,12 +44,18 @@ docker exec -it 9643024b51ce etcdctl \
 curl --cacert ca.crt --cert peer.crt --key peer.key https://192.168.0.1:2380/members
 
 # ETCDCTL_API=2
+export ETCDCTL_API=2
 etcdctl ls [-r/--recursive] /
 etcdctl mkdir /dir
 etcdctl get <key>
 etcdctl rm [-r/--recursive] /
 
+# ETCDCTL_API=3
 export ETCDCTL_API=3
+etcdctl get [--prefix=true] [--keys-only=true] /
+ectdctl get [--print-value-only=true] /service/cluster/config
+etcdctl del [--prefix=true] /
+
 export ETCDCTL_CACERT=/etc/kubernetes/pki/etcd/ca.crt
 export ETCDCTL_CERT=/etc/kubernetes/pki/etcd/peer.crt
 export ETCDCTL_KEY=/etc/kubernetes/pki/etcd/peer.key

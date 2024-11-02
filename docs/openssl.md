@@ -100,3 +100,7 @@ kubectl config --kubeconfig controller-manager.conf use-context zaddr
 
 openssl genpkey -algorithm ed25519 -out private.key
 openssl pkey -in private.key -pubout -out public.key
+
+## Get certificate info over net
+
+openssl s_client -connect <server-address>:<port>

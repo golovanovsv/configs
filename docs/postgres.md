@@ -75,7 +75,8 @@ ALTER SYSTEM SET jit = off;
 
 SELECT pg_database.datname as "Database", pg_size_pretty(pg_database_size(pg_database.datname)) as Size FROM pg_database ORDER BY "Database";
 
-SELECT table_schema, table_name, total_bytes AS total
+SELECT table_schema, table_name
+    , pg_size_pretty(total_bytes) AS total
     , pg_size_pretty(index_bytes) AS INDEX
     , pg_size_pretty(toast_bytes) AS toast
     , pg_size_pretty(table_bytes) AS TABLE
@@ -92,7 +93,7 @@ SELECT table_schema, table_name, total_bytes AS total
   ) a
 ) a
 WHERE table_schema != 'information_schema' AND table_schema != 'pg_catalog'
-ORDER BY total DESC,table_schema,table_name;
+ORDER BY total_bytes DESC,table_schema,table_name;
 
 ## Репликация
 Заливаем дамп базы с уадленного сервера:
@@ -107,6 +108,12 @@ SELECT pg_create_physical_replication_slot('<name>');
 
 Список существующих слотов репликации. Выводит в том числе логическую репликацию.
 select * from pg_replication_slots; 
+
+Отставание слота репликации
+SELECT
+  pg_size_pretty(pg_current_wal_lsn() - restart_lsn) as delay, 
+  slot_name
+FROM pg_replication_slots ORDER BY delay DESC;
 
 Удаление слота репликации
 select pg_drop_replication_slot('<name>');
@@ -126,10 +133,6 @@ select * from pg_stat_wal_receiver;
 SELECT * FROM pg_extension;
 SELECT * FROM pg_available_extensions
 
-# for bioauth
-# pg_trgm
-# btree_gin
-
 ## Блокировки
 
 select
@@ -146,6 +149,18 @@ from pg_catalog.pg_locks lock
 where (db.datname = '<db>' or db.datname is null)
   and not lock.pid = pg_backend_pid()
 order by lock.pid;
+
+## Создание таблицы
+
+CREATE TABLE [IF NOT EXISTS] <table-name> (
+   column1 datatype(length) column_constraint,
+   column2 datatype(length) column_constraint,
+   ...
+   table_constraints
+);
+
+INSERT INTO <table-name> (column1, column2, …)
+VALUES (value1, value2, …);
 
 ## Дамп/рестор таблиц
 

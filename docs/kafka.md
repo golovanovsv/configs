@@ -85,3 +85,19 @@ stat /brokers/ids/0 # Статистика ключа в zk
 
 # Get topic config
 kafka-configs --bootstrap-server <KAFKA_SERVERS> --entity-type topics --entity-name <TOPIC_NAME> --describe --all
+
+# Auth
+# https://kafka.apache.org/documentation/#security_sasl_mechanism
+# https://strimzi.io/docs/operators/latest/deploying#con-securing-kafka-authentication-str
+sasl.mechanism:
+  - GSSAPI
+  - PLAIN
+  - SCRAM-SHA-[256/512]
+  - OAUTHBEARER
+
+# https://kafka.apache.org/documentation/#producerconfigs_security.protocol
+security.protocol:
+  - SASL_SSL
+  - SASL_PLAINTEXT
+  - PLAINTEXT
+  - SSL

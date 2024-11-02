@@ -43,6 +43,9 @@ kubectl drain <node> [--ignore-daemonsets]
 # kubectl docs
 kubectl explain pod.spec.containers
 
+# kubectl debug
+kubectl debug <pod-to-debug> -it --image=<debug-image> -c <container-name>
+
 # kubeadm
 sudo kubeadm init --node-name k0.xaddr.ru --kubernetes-version 1.22 --pod-network-cidr=10.244.0.0/20 --upload-certs --control-plane-endpoint 5.189.0.215
 sudo kubeadm init --node-name k0.xaddr.ru --upload-certs --config cluster.yaml
