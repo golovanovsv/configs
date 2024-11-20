@@ -8,7 +8,7 @@ openssl req -x509 -new -nodes -key ca.key -sha256 -subj "/CN=kube-ca" -days 3650
 
 openssl dhparam -out /etc/nginx/ssl/dhparam 2048
 
-## Create selfdigned CA
+## Create selfsigned CA
 # via csr
 
 openssl genpkey -algorithm ed25519 -out private.key
@@ -17,7 +17,7 @@ openssl x509 -req -in ca.csr -signkey ca.key -days 3700 -out ca.crt
 
 # without csr
 
-openssl req -x509 -sha256 -days 3700 -nodes -newkey rsa:2048 -subj "/CN=demo.mlopshub.com/C=US/L=San Fransisco" -keyout ca.key -out ca.crt 
+openssl req -x509 -sha256 -days 3700 -nodes -newkey ed25519:1024 -subj "/CN=Global CA/C=US/L=San Fransisco" -keyout ca.key -out ca.crt 
 
 ## Create selfsigned certificate
 
@@ -25,7 +25,7 @@ openssl req -nodes -x509 -newkey rsa:4096 -keyout local.key -out local.pem -days
 
 ## Create certificate via csr
 
-openssl genrsa -out kube-apiserver.key 2048
+openssl genpkey -algorithm ed25519 -out kube-apiserver.key
 openssl req -new -key kube-apiserver.key -out kube-apiserver.csr -config file.cnf
 openssl x509 -req -CA ca.crt -CAkey ca.key -CAcreateserial -in kube-apiserver.csr -out kube-apiserver.crt -days 1825 -extensions v3_ext -extfile file.cnf
 

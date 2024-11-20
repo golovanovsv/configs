@@ -212,6 +212,14 @@ sync; echo 3 | sudo tee /proc/sys/vm/drop_caches
 apt install wireguard
 wg genkey | sudo tee /etc/wireguard/privatekey | wg pubkey | sudo tee /etc/wireguard/publickey
 
+## Shared memory
+Внктри Linux есть 2 механизма разделяемой памяти:
+1. mmap - мапинг файла или его частей напрямую в память. В этом случае память разделяется между процессов созданных при помощи fork()
+2. posix - память выделяется при помощи вызова shm_open(). В этом случае память может разделяться между любыми процессами.
+
+Посмотреть за этим можно через утилиту `ipcs -a`
+Поуправлять утилитами `ipcmk`/`ipcrm`
+
 # peer-1
 # /etc/wireguard/wg0.conf
 ```bash

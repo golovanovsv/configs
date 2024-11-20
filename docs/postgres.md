@@ -26,6 +26,9 @@ SELECT * FROM pg_stat_activity; - список коннектов (connect)
 SELECT count(pid) FROM pg_stat_activity; - число открытых соединений
 SELECT datname, usename, client_addr, client_hostname, state FROM pg_stat_activity;
 
+SELECT usename, datname, client_addr, ssl, version, cipher FROM pg_stat_ssl 
+JOIN pg_stat_activity ON pg_stat_ssl.pid = pg_stat_activity.pid;
+
 ## Отключение сессий
 
 select pg_terminate_backend(pid) from pg_stat_activity where datname='<db>';
@@ -131,7 +134,7 @@ select * from pg_stat_wal_receiver;
 Расширения включаются в конкретных БД и реплицируются с бинарной репликацией.
 Необходимо подключение расширений параметром shared_preload_libraries в postgres.conf.
 SELECT * FROM pg_extension;
-SELECT * FROM pg_available_extensions
+SELECT * FROM pg_available_extensions;
 
 ## Блокировки
 
