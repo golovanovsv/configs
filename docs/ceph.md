@@ -1,5 +1,15 @@
 ### ceph
 
+## ceph basic info
+
+ceph health detail / ceph -s
+ceph df
+ceph osd df tree
+ceph osd pools ls detail
+ceph osd crush rule ls
+
+## ceph commands
+
 ceph health		# Состояние
 ceph -w 		# Расширенное состояние
 ceph -v			# Версия

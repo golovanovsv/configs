@@ -104,3 +104,17 @@ openssl pkey -in private.key -pubout -out public.key
 ## Get certificate info over net
 
 openssl s_client -connect <server-address>:<port>
+
+## CA hash
+
+openssl x509 -subject_hash -in root.crt
+
+# ca store
+Часть библиотек/языков поддерживает настройку места расположения корневых сертификатов через переменные:
+1. SSL_CERT_DIR
+2. SSL_CERT_FILE
+
+Но python не входит в это число и работает только с корневыми сертификатами, размещенными в /etc/ssl/certs/ca-certificates.crt
+
+python3 -c 'import certifi; print(certifi.where())'
+python3 -c 'import requests; print(requests.certs.where())'

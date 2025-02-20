@@ -1,5 +1,9 @@
 # Пруфы:
 # https://www.youtube.com/watch?v=kKigibHrV5I
+# https://habr.com/ru/companies/otus/articles/776342/
+
+# get default values
+java -XX:+PrintFlagsFinal -version | grep ThreadStackSize
 
 # Мониторинг напрямую черех JMX
 
