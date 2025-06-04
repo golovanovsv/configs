@@ -89,6 +89,7 @@ yum --showduplicates list <package>
 ## ssh
 # key generation
 ssh-keygen -t rsa -b 4096 -C "comment" -f <output-name>
+ssh-keygen -t ed25519 -C "comment" -f <output-name>
 
 # key info
 ssh-keygen -l -f <file>
