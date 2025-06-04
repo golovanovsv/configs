@@ -17,11 +17,12 @@ openssl x509 -req -in ca.csr -signkey ca.key -days 3700 -out ca.crt
 
 # without csr
 
-openssl req -x509 -sha256 -days 3700 -nodes -newkey ed25519:1024 -subj "/CN=Global CA/C=US/L=San Fransisco" -keyout ca.key -out ca.crt 
+openssl req -x509 -sha256 -days 3700 -nodes -newkey ed25519:1024 -subj "/CN=Global CA/C=US/L=San Fransisco" -keyout ca.key -out ca.crt
 
 ## Create selfsigned certificate
 
-openssl req -nodes -x509 -newkey rsa:4096 -keyout local.key -out local.pem -days 1825 -subj "/CN=Cybertonica gitlab server"
+openssl req -nodes -x509 -newkey rsa:4096 -keyout local.key -out local.pem -days 1825 -subj "/CN=Company LLC"
+openssl req -nodes -x509 -newkey ed25519:1024 -keyout local.key -out local.pem -days 1825 -subj "/CN=Company LLC" -addext "subjectAltName=DNS:gitlab.com,DNS:www.gitlab.com,IP:10.0.0.1"
 
 ## Create certificate via csr
 
