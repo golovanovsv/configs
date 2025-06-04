@@ -39,7 +39,6 @@ elif [[ ${os} == "FreeBSD" ]]; then
 fi
 
 # Параметры цвета
-# При нстройке переменой PROMPT при помощи модуля colors почему-то сбивается отступ командной строки при автодополнении
 fg_black=$'%{\e[0;30m%}'
 fg_red=$'%{\e[0;31m%}'
 fg_green=$'%{\e[0;32m%}'
@@ -114,7 +113,7 @@ git_prompt() {
     ret=""
     branch=`git symbolic-ref HEAD 2>/dev/null | sed 's/refs\/heads\///g'`
     if [[ $branch == "" ]]; then
-        rep=""
+        ret=""
     elif [[ $branch == "master" ]]; then
         ret="[${fg_light_red}${branch}${fg_light_cyan}]"
     elif [[ $branch == "develop" ]]; then
@@ -136,12 +135,54 @@ fi
 # Настройка альясов (common)
 alias su="su -m"
 
+if [[ ${os} == "Linux" ]]; then
+    alias ls="ls -allh --color"
+elif [[ ${os} == "FreeBSD" ]]; then
+	alias ls="ls -allh -G"
+else
+	alias ls="ls -allh"
+fi
+
+# Заголовки для терминала
+precmd() {
+    print -Pn "\e]2;%n@%M\a"
+    print -Pn "\e]1;%n@%M\a"
+}
+
+## Специфические настройки для ПО
+# Системные утилиты
 if [[ $(grep --color &> /dev/null) -eq 0 ]]; then
     alias grep="grep --color=auto"
 fi
 
 if [[ $(ip --color &> /dev/null) -eq 0 ]]; then
     alias ip="ip -color=auto"
+fi
+
+# Бинари
+if [[ -f /bin/kubectl || -f /usr/bin/kubectl ]]; then
+    source <(kubectl completion zsh);
+    # Игнорируем часть команд в автодополнении
+    zstyle ':completion:*' ignored-patterns 'kubeadm|kubelet|kubernetes-scripts';
+    # Переменные среды для kubectl
+    # export KUBECONFIG=
+fi
+
+if [[ -f /bin/docker ]]; then
+    source <(docker completion zsh)
+    # Переменные среды для docker
+    export DOCKER_BUILDKIT=1
+    export BUILDKIT_PROGRESS=plain
+fi
+
+if [[ -f /bin/helm || -f /usr/bin/helm ]]; then
+    source <(helm completion zsh)
+fi
+
+if [[ -f /usr/bin/helmfile || -f /bin/helmfile ]]; then
+    source <(helmfile completion zsh)
+    # Переменные среды для helmfile
+    export HELM_DIFF_USE_UPGRADE_DRY_RUN=true
 fi
 
 if [[ -f /usr/bin/bat ]]; then
@@ -158,39 +199,3 @@ if [[ -f /bin/jq || /usr/bin/jq ]]; then
     # - color for objects
     export JQ_COLORS="1;31:1;31:1;32:1;33:1;36:1;36:1;36"
 fi
-
-if [[ ${os} == "Linux" ]]; then
-    alias ls="ls -allh --color"
-elif [[ ${os} == "FreeBSD" ]]; then
-	alias ls="ls -allh -G"
-else
-	alias ls="ls -allh"
-fi
-
-# Настройка альясов (kubectl)
-if [[ $(command -v kubectl &> /dev/null; echo $?) -eq 0 ]]; then
-    alias k='kubectl '
-    alias ksn='_f(){k get namespace $1 > /dev/null; if [ $? -eq 1 ]; then return $?; fi;  k config set-context $(k config current-context) --namespace=$1; echo "Namespace: $1"};_f'
-    alias kg='kubectl get '
-    alias kgp='kubectl get po'
-fi
-
-# Заголовки для терминала
-precmd() {
-    print -Pn "\e]2;%n@%M\a"
-    print -Pn "\e]1;%n@%M\a"
-}
-
-## Экзотические автодополнения
-if [[ -f /usr/local/bin/kubectl || -f /usr/bin/kubectl ]]; then
-    source <(kubectl completion zsh);
-    # Игнорируем часть команд в автодополнении
-    zstyle ':completion:*' ignored-patterns 'kubeadm|kubelet|kubernetes-scripts';
-fi
-
-if [[ -f /usr/local/bin/helm || -f /usr/bin/helm ]]; then
-    source <(helm completion zsh)
-fi
-
-appsh_args=(stop start reload)
-compctl -k appsh_args app.sh
