@@ -1,7 +1,10 @@
+# https://coreos.github.io/butane/specs/
 variant: fcos
-version: 1.3.0
+version: 1.6.0
 passwd:
   users:
     - name: reptile
       ssh_authorized_keys:
         - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBRnwSP44jA+sM1/pal6UxnZr38fe7sqzoGE6oGcF8XX golovanovsv@gmail.com
+      groups:
+        - sudo
