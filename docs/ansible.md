@@ -1,3 +1,4 @@
+# Ansible
 
 Перечень фактов:
 ansible all -i 'localhost,' -m setup -a 'filter=ansible_pkg_mgr'
@@ -12,15 +13,22 @@ list[dicts] | map(attribute='element') | list
 [1, 2] | zip([a, b]) = [ [1, a], [2, b] ]
 
 Собрать группу по ключу
+
+```yaml
 - group_by:
     key: "{{ group_id|default('noGroup') }}"
+```
 
 Не выводить чувствительные данные
+
+```yaml
 - name: "Set password"
   set_fact: ...
   no_log: true
+```
 
-### vars
+## vars
+
 ansible_all_ipv4_addresses
 ansible_default_ipv4.address
 ansible_pkg_mgr: systemd|upstart|...
@@ -40,7 +48,8 @@ ansible_hostname: hostname from facts
 ### Динамические группы по ключу
 
 Модуль group_by создает группы по имени указанного ключа (key).
-```
+
+```yaml
 # role: www
 # role: app
 - group_by:
@@ -53,3 +62,36 @@ ansible_hostname: hostname from facts
 
 Модуль `set_fact` добавляет переменные в структуру hostvars.
 Поэтому к переменным одного севрера можно обращать с другого сервера.
+
+### Как собрать массив в set_fact
+
+```yaml
+  - set_fact:
+      instance:
+        name: "{{ ansible_nodename }}"
+        os: "{{ ansible_distribution + ' (' + ansible_distribution_version + ')' }}"
+        cpus: "{{ ansible_facts.processor_vcpus }}"
+        memory: "{{ (ansible_memtotal_mb / 1024) | round }}"
+        disks: >
+          {{
+            dict(
+              ansible_devices
+              | dict2items
+              | selectattr('value.vendor', 'equalto', 'ATA')
+              | map(attribute='key')
+              | zip(
+                  ansible_devices
+                  | dict2items
+                  | selectattr('value.vendor', 'equalto', 'ATA')
+                  | map(attribute='value.size')
+                )
+            )
+          }}
+      instance2: >
+        {{ {
+          "name": ansible_nodename,
+          "os": ansible_distribution + " (" + ansible_distribution_version + ")",
+          "cpus": ansible_facts.processor_vcpus,
+          "memory": (ansible_memtotal_mb / 1024) | round
+        } }}
+```
