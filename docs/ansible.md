@@ -95,3 +95,40 @@ ansible_hostname: hostname from facts
           "memory": (ansible_memtotal_mb / 1024) | round
         } }}
 ```
+
+### Как фильтровать массивы словарей
+
+```yaml
+mounts:
+  - mount: /
+    fstype: ext4
+    device: /dev/sda2
+  - mount: /data
+    fstype: xfs
+    device: /data/sdb
+```
+
+Чтобы выбрать все элементы массива с типом fs = extfs:
+
+`{{ mounts | selectattr('fstype', 'equalto', 'xfs') }}`:
+
+```yaml
+mounts:
+  - mount: /data
+    fstype: xfs
+    device: /data/sdb
+```
+
+Чтобы получить все варианты значений поля fstype:
+
+`{{ ansible_mounts | map(attribute='fstype') }}`:
+
+```yaml
+mounts:
+  - ext4
+  - xfs
+```
+
+### Форматирование строк
+
+`{{ "Name: %s" | format(name) }}` - используется форматирование с [printf-style](https://docs.python.org/3/library/stdtypes.html#printf-style-string-formatting)
