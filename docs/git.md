@@ -14,6 +14,9 @@ git revert [--edit] <commit>
 git branch -d <branch-name>
 git branch -d -r origin/<remote branch-name>
 
+## Checkout
+git checkout -b branch-name origin/branch-name
+
 ## rebase
 git checkout <branch>
 git rebase master
@@ -24,7 +27,6 @@ git push --force
 
 git rebase --ineractive HEAD~1
 r - отредактировать commit-massage
-
 
 # changes in merge
 git merge --no-commit origin/FFMSK-666666
@@ -52,6 +54,28 @@ Commit and delete the now untracked submodule files.
 
 # Config
 git config [--global] "http.https://gitlab.int".sslVerify false
-git config [--global] "http.https://gitlab.int".sslCAInfo /etc/ssl/ca.pem 
+git config [--global] "http.https://gitlab.int".sslCAInfo /etc/ssl/ca.pem
 git config [--global] user.name golovanovsv
-git config [--global] user.email golovanovsv@
+git config [--global] user.email golovanovsv@gmail.com
+
+```bash
+# ~/.gitconfig
+[core]
+  autocrlf = false
+  filemode = true
+
+[safe]
+  directory = D:/projects/
+
+[user]
+  name golovanovsv
+  email golovanovsv@gmail.com
+
+[includeIf "gitdir:D:/projects/company/"]
+  path = D:/projects/company/.gitconfig
+
+# D:/projects/company/.gitconfig
+[user]
+    name = "Company username"
+    email = golovanovsv@company.com
+```
