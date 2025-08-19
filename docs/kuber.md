@@ -73,7 +73,7 @@ kubeadm init phase certs apiserver --config kubeadm.yaml
 
 # calico
 kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
-kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.25.1/manifests/calico.yaml
+kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.30.2/manifests/calico.yaml
 
 # cilium
 curl -L --fail --remote-name-all https://github.com/cilium/cilium-cli/releases/download/v0.13.2/cilium-linux-amd64.tar.gz

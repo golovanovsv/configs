@@ -54,6 +54,16 @@ sudo apt update
 sudo apt install -y --no-install-recommends kubelet kubeadm kubectl containerd.io cri-tools
 ```
 
+```bash
+# KUBERNETES_VERSION <=1.27
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+cat <<EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
+deb https://apt.kubernetes.io/ kubernetes-xenial main
+EOF
+```
+
+https://dl.k8s.io/v1.27.16/kubernetes-node-linux-amd64.tar.gz
+
 ## Configure containerd
 
 ```bash
@@ -63,14 +73,17 @@ version = 2
 
 [plugins]
   [plugins."io.containerd.grpc.v1.cri"]
+    sandbox_image = "registry.k8s.io/pause:3.8"
 
     [plugins."io.containerd.grpc.v1.cri".containerd]
       discard_unpacked_layers = true
       default_runtime_name = "runc"
+
       [plugins."io.containerd.grpc.v1.cri".containerd.runtimes]
         [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc]
           runtime_type = "io.containerd.runc.v2"
           SystemdCgroup = true  # containerd 1.6
+
           [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
             SystemdCgroup = true  # containerd 1.7
 
