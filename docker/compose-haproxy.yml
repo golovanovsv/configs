@@ -1,0 +1,46 @@
+services:
+  haproxy:
+    image: haproxy:3.2.4-alpine
+    container_name: haproxy
+    hostname: haproxy
+    restart: unless-stopped
+    cap_add:
+      - CAP_NET_BIND_SERVICE
+    network_mode: "host"
+    configs:
+      - source: haproxy.cfg
+        target: /etc/haproxy/haproxy.cfg
+    logging:
+      driver: json-file
+      options:
+        max-file: '5'
+        max-size: 10m
+
+configs:
+  haproxy.cfg:
+    content: |
+      global
+        log /dev/log  local0
+
+      defaults
+        log global
+        option dontlognull
+        timeout connect 5000
+        timeout client  50000
+        timeout server  50000
+
+      frontend kubernetes-api
+        bind *:6443
+        mode tcp
+        use_backend kubernetes-api
+
+      backend kubernetes-api
+        mode tcp
+        option httpchk
+        option log-health-checks
+        http-check connect ssl
+        http-check send meth GET uri /readyz
+        http-check expect status 200
+        server master-0 10.0.0.1:6443 check check-ssl verify none
+        server master-1 10.0.0.2:6443 check check-ssl verify none
+        server master-2 10.0.0.3:6443 check check-ssl verify none
