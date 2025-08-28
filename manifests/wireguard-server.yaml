@@ -1,0 +1,107 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    kubernetes.io/metadata.name: wireguard
+  name: wireguard
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: wireguard
+  namespace: wireguard
+type: Opaque
+stringData:
+  wg0.conf.template: |
+    [Interface]
+    Address = 172.28.0.0/16
+    ListenPort = 51820
+    PrivateKey = gMtVbLlVwQm4cd2bbGtS/mPabvOrlBicAHTzcraVAnw=
+    PostUp = iptables -A FORWARD -i wg0 -j ACCEPT; iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+    PostUp = sysctl -w -q net.ipv4.ip_forward=1
+    PostDown = iptables -D FORWARD -i wg0 -j ACCEPT; iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE
+    PostDown = sysctl -w -q net.ipv4.ip_forward=0
+
+    [Peer]
+    PublicKey = FO9Gx1ddqG8+NRftiaphMHv1jL2BmqlcsBKHtoVaxhc=
+    AllowedIPs = 0.0.0.0/0
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    meta.helm.sh/release-name: wireguard
+  labels:
+  name: wireguard
+  namespace: wireguard
+spec:
+  selector:
+    matchLabels:
+      app: wireguard
+  template:
+    metadata:
+      labels:
+        app: wireguard
+    spec:
+      containers:
+      - name: wireguard
+        image: linuxserver/wireguard:latest
+        env:
+        - name: PEERS
+          value: user1,user2
+        - name: PUID
+          value: '1000'
+        - name: PGID
+          value: '1000'
+        - name: ALLOWEDIPS
+          value: 0.0.0.0/0
+        - name: SERVERURL
+          value: "188.73.145.111"
+        - name: SERVERPORT
+          value: "13231"
+        ports:
+        - containerPort: 51820
+        securityContext:
+          capabilities:
+            add:
+            - NET_ADMIN
+            - SYS_MODULE
+          privileged: true
+        volumeMounts:
+        - mountPath: "/config/"
+          name: wireguard-config
+      initContainers:
+      - name: wireguard-template-replacement
+        image: busybox:latest
+        command:
+        - sh
+        - "-c"
+        - ENI=$(ip route get 8.8.8.8 | grep 8.8.8.8 | awk '{print $5}'); sed "s/ENI/$ENI/g"
+          /etc/wireguard-secret/wg0.conf.template > /config/wg0.conf; chmod 400 /config/wg0.conf
+        - sysctl -w net.ipv4.ip_forward=1
+        volumeMounts:
+        - mountPath: "/config/"
+          name: wireguard-config
+        - mountPath: "/etc/wireguard-secret/"
+          name: wireguard-secret
+      volumes:
+      - emptyDir: {}
+        name: wireguard-config
+      - name: wireguard-secret
+        secret:
+          secretName: wireguard
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wireguard
+  namespace: wireguard
+spec:
+  type: NodePort
+  selector:
+    app: wireguard
+  ports:
+    - protocol: UDP
+      port: 51820
+      targetPort: 51820
+      nodePort: 32813

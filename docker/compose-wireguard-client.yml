@@ -1,0 +1,38 @@
+services:
+  wg-client:
+    image: linuxserver/wireguard:1.0.20210914
+    container_name: wg-client
+    hostname: wg-client
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+    configs:
+      - source: wg0-client.conf
+        target: /config/wg_confs/wg0-client.conf
+    sysctls:
+      - net.ipv4.ip_forward=1
+  wg-watcher:
+    image: busybox:1.37.0
+    container_name: wg-watcher
+    restart: unless-stopped
+    network_mode: "service:wg-client"
+    command:
+      - sh
+      - -c
+      - ping -i 5 172.30.254.1
+
+configs:
+  wg0-client.conf:
+    content: |
+      [Interface]
+      Address = 172.30.254.3/24          # Адрес клиента (должен входить в подсеть сервера)
+      PrivateKey = <client-private-key>  # Приватный ключ клиента
+      ListenPort = 51820                 # Порт на котором будет слушать локальный wireguard сервер
+      # Скрипты включающие и выключающие NAT при запуске wireguard
+      PostUp = iptables -A FORWARD -i %i -j ACCEPT; iptables -A FORWARD -o %i -j ACCEPT; iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+      PostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -D FORWARD -o %i -j ACCEPT; iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE
+
+      [Peer]
+      PublicKey = <server-public-key>
+      Endpoint = <server-ip>:31813
+      AllowedIPs = 172.30.254.0/24

@@ -1,0 +1,72 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    kubernetes.io/metadata.name: wireguard
+  name: wireguard
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: wireguard
+  namespace: wireguard
+type: Opaque
+stringData:
+  wg0-client.conf: |
+    [Interface]
+    Address = 172.16.245.2/24
+    PrivateKey = <client-private-key>
+    ListenPort = 51820
+    PostUp = iptables -A FORWARD -i %i -j ACCEPT; iptables -A FORWARD -o %i -j ACCEPT; iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+    PostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -D FORWARD -o %i -j ACCEPT; iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE
+
+    [Peer]
+    PublicKey = <server-public-key>
+    Endpoint = <server-ip>:<server-port>
+    AllowedIPs = 172.16.245.0/24
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wireguard
+  namespace: wireguard
+spec:
+  selector:
+    matchLabels:
+      app: wireguard
+  template:
+    metadata:
+      labels:
+        app: wireguard
+    spec:
+      initContainers:
+        - name: sysctl
+          image: busybox:latest
+          command:
+            - sh
+            - -c
+            - sysctl -w -q net.ipv4.ip_forward=1
+          securityContext:
+            privileged: true
+      containers:
+        - name: wireguard
+          image: linuxserver/wireguard:1.0.20210914
+          ports:
+            - containerPort: 51820
+          securityContext:
+            capabilities:
+              add:
+              - NET_ADMIN
+          volumeMounts:
+            - mountPath: "/config/wg_confs"
+              name: wireguard-secret
+        - name: watcher
+          image: busybox:1.37.0
+          command:
+            - sh
+            - -c
+            - ping -i 5 172.16.245.1
+      volumes:
+        - name: wireguard-secret
+          secret:
+            secretName: wireguard
