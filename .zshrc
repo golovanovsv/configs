@@ -1,6 +1,6 @@
 # Общие параметры
-path=( /bin /sbin /usr/bin /usr/sbin /usr/local/bin /usr/local/sbin /usr/local/samba/bin \
-       /usr/local/samba/sbin /usr/X11R6/bin /usr/X11R6/sbin /stand /usr/lib/python-django/bin .)
+path=( /bin /sbin /usr/bin /usr/sbin /usr/local/bin /usr/local/sbin \
+       $HOME/.pulumi/bin $HOME/bin .)
 typeset -U path
 umask 022
 
