@@ -201,6 +201,6 @@ if [[ -f /bin/jq || /usr/bin/jq ]]; then
 fi
 
 # Локальные переменные
-if [[ -f ~/.zshrc-local ]]
+if [[ -f ~/.zshrc-local ]]; then
     source ~/.zshrc-local
 fi
