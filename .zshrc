@@ -199,3 +199,8 @@ if [[ -f /bin/jq || /usr/bin/jq ]]; then
     # - color for objects
     export JQ_COLORS="1;31:1;31:1;32:1;33:1;36:1;36:1;36"
 fi
+
+# Локальные переменные
+if [[ -f ~/.zshrc-local ]]
+    source ~/.zshrc-local
+fi
