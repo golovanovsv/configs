@@ -64,12 +64,21 @@ git config [--global] user.email golovanovsv@gmail.com
   autocrlf = false
   filemode = true
 
+[commit]
+  gpgsign = true
+
+[tag]
+  gpgSign = true
+
 [safe]
   directory = D:/projects/
 
 [user]
   name golovanovsv
   email golovanovsv@gmail.com
+
+[gpg]
+  program = C:\\Program Files (x86)\\gnupg\\bin\\gpg.exe
 
 [includeIf "gitdir:D:/projects/company/"]
   path = D:/projects/company/.gitconfig
@@ -78,4 +87,5 @@ git config [--global] user.email golovanovsv@gmail.com
 [user]
     name = "Company username"
     email = golovanovsv@company.com
+    signingkey = 6A09E3CB498D44EF5785AB3D830534E0110C8447
 ```

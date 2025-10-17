@@ -1,33 +1,48 @@
-## generic backend
+# Vault
 
-vault write test/db/mongo/users \
+## login
+
+export VAULT_ADDR=<https>
+vault login -method=ldap username=reptile  # Токен сохраняется в ~/.vault-token
+
+## secrets (v2) engine
+
+vault kv list <engine-name>
+
+vault kv get [-field=kubeconfig] <engine-name>/k8s
+
+vault kv put <engine-name>/mongo/admin \
   username=admin \
   password=password
 
-vault read test/db/mongo/users
+vault kv patch <engine-name>/mongo/admin newuser=newpassword
 
-## aws backend
-vault write aws/creds/deploy arn=arn:aws:iam::aws:policy/AmazonEC2eadOnlyAccess lease_duration=<seconds>
-vault read aws/creds/deploy
-  access_key <key>
-  secret_key <token>
+vault kv metadata get <engine-name>/mongo/admin
+
+vault kv delete [-versions=3] <engine-name>/mongo/admin
+
+## PKI (SSL) backend
 
 ## mongo backend
 
 ## policy
+
 path "test/db"{
     capabilities = ["read"]
 }
 
 ## tokens
-vault token create -policy=<policy name> 
+
+vault token create -policy=<policy name>
 
 ## ansible
+
 Плагин (?) ansible-vault
 
 {{ lookup('vault', 'test/db/mongo/users).username }}
 
 ## terraform
+
 data "vault_generic_secret" "mongo" {
   path = "test/db/mongo/users"
 }

@@ -7,6 +7,21 @@ gpg --delete-key # удалить ключ
 
 gpg --full-generate-key [--expert]  # Сгенерировать пару ключей
 
+```bash
+# https://www.gnupg.org/documentation/manuals/gnupg/Unattended-GPG-key-generation.html
+gpg --batch --full-generate-key <<EOF
+%no-protection      # Не защищать ключ паролем
+Key-Type: EDDSA     # Алгоритм ключа
+Key-Curve: ed25519  # Кривая алгоритма (только для EDDSA)
+Subkey-Type: ECDH      # Алгоритм подключа
+Subkey-Curve: cv25519  # Кривая алгоритма подключа (только для EDDSA)
+Expire-Date: 0         # Дата устаревания ключа
+Name-Comment: gitlab             # Комментарий к ключу
+Name-Real: UserName              # Название ключа
+Name-Email: username@google.com  # Электронная почта владельца (требуется для СКВ)
+EOF
+```
+
 Типы ключей:
 - pub - публичный ключ
 - sub - публичный подключ

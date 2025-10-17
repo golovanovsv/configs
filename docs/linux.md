@@ -82,10 +82,6 @@ lvcreate -T -V 200G storage/thin -n test
 
 lvreduce -L30G /dev/vg0/root
 
-## yum
-yum list installed
-yum --showduplicates list <package>
-
 ## ssh
 # key generation
 ssh-keygen -t rsa -b 4096 -C "comment" -f <output-name>
@@ -200,11 +196,6 @@ ip rule list
 xfs_admin -l /dev/sdb1
 xfs_admin -L externo /dev/sdb1
 
-## Docker netns
-По-умолчанию netns должны храниться в /run/netns (оно же /var/run/netns ). Но docker хранит их в /var/run/docker/netns
-Чтобы утилита ip могла видеть пространства докера нужна ссылка
-sudo ln -s /var/run/docker/netns  /var/run/netns
-
 ## Page cache
 reset cache:
 sync; echo 3 | sudo tee /proc/sys/vm/drop_caches
@@ -279,6 +270,47 @@ update-grub
 
 ## yum/rpm
 rpm -qa                  # Установленные пакеты
+yum repolist             # Список репозиториев
+yum repolist enabled     # Список активных репозиториев
 yum whatprovides 'sshd'  # Найти пакет с бинарником sshd
 yum search mc            # Найти пакет
 yum install mc           # Установить пакет
+yum list installed
+yum --showduplicates list <package>
+
+yum --disablerepo="*" --enablerepo="epel" list available
+
+## dnf
+dnf config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
+dnf config-manager [--enablerepo | --disablerepo] <repo-name>
+dnf repolist enabled
+dnf group list [--hidden]
+dnf group install <group-name>
+dnf group remove <group-name>
+
+dnf --disablerepo="*" --enablerepo="epel" list available
+
+## fio
+
+modes:
+
+- read
+- randread
+- write
+- randwrite
+
+```bash
+fio \
+  --name=test \
+  --filename=/dev/drbd1000 \
+  --ioengine=libaio \
+  --iodepth=32 \
+  --direct=1 \
+  --rw=randread \
+  --bs=16k \
+  --size=2G \
+  --numjob=1 \
+  --group_reporting \
+  --time_based \
+  --runtime=60
+```
