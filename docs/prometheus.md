@@ -9,7 +9,6 @@ topk(<num>, <vector>)
 
 rate vs irate vs delta
 
-
 rate - среднее значение по всему диапазону, используется с counters
 irate - мгновенная разница на основании двух последних отсчетов
 idelta - разница между последними двумя значениями вектора, используется с типом gauge
@@ -97,3 +96,11 @@ text: |-
 ```
 
 Дополнительно можно пройтись по всем возникшим алертам `.Alers.Firing` или по разрешенным `.Alerts.Resolved`
+
+## promtool
+
+promtool tsdb analyze /data                                  # Анализ всех метрик
+promtool tsdb analyze --match=node_systemd_unit_state /data  # Анализ метрики
+promtool tsdb dump /data                                     # Данные по всем метрикам в блоке
+promtool tsdb dump --match=node_systemd_unit_state /data     # Данные по метрике в блоке
+promtool tsdb list /data                                     # Параметры блоков хранения
