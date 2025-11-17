@@ -170,6 +170,8 @@ fi
 
 if [[ -f /bin/docker ]]; then
     source <(docker completion zsh)
+    # Игнорируем часть команд в автодополнении
+    zstyle ':completion:*' ignored-patterns 'docker-proxy|dockerd|docutils';
     # Переменные среды для docker
     export DOCKER_BUILDKIT=1
     export BUILDKIT_PROGRESS=plain
