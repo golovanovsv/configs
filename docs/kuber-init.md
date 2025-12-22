@@ -9,10 +9,20 @@ kubeadm config print join-defaults
 
 ## kubernetes init
 
+Проверка параметров:
+
+```bash
+kubeadm init phase kubelet-start --config cluster.yaml --dry-run     # kubelet configs
+kubeadm init phase etcd local --config cluster.yaml --dry-run        # etcd static manifest
+kubeadm init phase control-plane all --config cluster.yaml --dry-run # control-plane static manifest
+kubeadm init phase certs all --config cluster.yaml --dry-run         # certificates
+kubeadm init phase addon all --config cluster.yaml --dry-run
+```
+
 ```bash
 cat << EOF > cluster.yaml
-# https://kubernetes.io/docs/reference/config-api/kubeadm-config.v1beta3/
-apiVersion: kubeadm.k8s.io/v1beta3
+# https://kubernetes.io/docs/reference/config-api/kubeadm-config.v1beta4/
+apiVersion: kubeadm.k8s.io/v1beta4
 kind: ClusterConfiguration
 kubernetesVersion: stable
 clusterName: k8s-cluster
@@ -20,19 +30,33 @@ clusterName: k8s-cluster
 # imageRepository: "<3-rd party repo>"
 networking:
   dnsDomain: cluster.local
-  podSubnet: 10.255.0.0/17
-  serviceSubnet: 10.255.128.0/17
+  podSubnet: 10.255.128.0/17
+  serviceSubnet: 10.255.0.0/17
 etcd:
   local:
     dataDir: /var/lib/etcd
-  extraArgs:
-    # election-timeout: 1000
-    snapshot-count: 10000
+    extraArgs:
+      - name: election-timeout
+        value: "1000"
+      - name: snapshot-count
+        value: "10000"
 apiServer:
-  timeoutForControlPlane: 4m0s
+  certSANs:
+    - localhost
+    - 127.0.0.1
   extraArgs:
-    audit-log-path: /var/log/k8s.log
-    authorization-mode: Node,RBAC
+    - name: audit-log-path
+      value: /var/log/k8s.log
+    - name: authorization-mode
+      value: Node,RBAC
+---
+apiVersion: kubeadm.k8s.io/v1beta3
+kind: InitConfiguration
+nodeRegistration:
+  name: "node-name-4ever"
+localAPIEndpoint:
+  advertiseAddress: "172.31.255.1"
+  bindPort: 6443
 ---
 kind: KubeletConfiguration
 apiVersion: kubelet.config.k8s.io/v1beta1
@@ -41,11 +65,16 @@ cgroupDriver: systemd
 kind: KubeProxyConfiguration
 apiVersion: kubeproxy.config.k8s.io/v1alpha1
 mode: ipvs
+---
+apiVersion: kubeadm.k8s.io/v1beta4
+kind: InitConfiguration
+timeouts:
+  controlPlaneComponentHealthCheck: "4m0s"
 EOF
 ```
 
 ```bash
-sudo kubeadm --config cluster.yaml`
+sudo kubeadm --config cluster.yaml
 ```
 
 ## kubernetes join

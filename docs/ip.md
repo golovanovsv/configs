@@ -32,10 +32,16 @@ ip link add <name> type vxlan \
   ttl 1
 
 ip link add <name> type vxlan \
-  id <id> \ 
+  id <id> \
   dstport <port> \
   local <ip> \
   remote <ip> \     # Статический VTEP без использования муьтикаста
 
 bridge link                                              # Перечень vxlan
 bridge fdb append 00:00:00:00:00:00 dev <name> dst <ip>  # Дополнительный VTEP для vxlan
+
+## routing tables
+ip route show table all
+ip route show table <name|number>
+
+ip rule

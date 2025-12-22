@@ -12,13 +12,15 @@ pgcli - command line interface for Postgres with auto-completion and syntax
 \db - список tablespace
 \da - List of aggregate functions
 \dn - список схем
-\d  - 
+\d  -
 \dt *.* - список таблиц с указанием владельца
 \d+ *.* - посмотреть данные объекта
 \dp  - права доступа в контексте БД
 \ddp - права доступа по-умолчанию в контексте БД
+\df  - список процедур
+\dy  - список триггеров
 \x  - вертикальный вывод данных (или добавить :G в конце запроса вместо ;)
-\conninfo - информация о текущем подключении 
+\conninfo - информация о текущем подключении
 
 ## Проверка активности
 
@@ -26,7 +28,7 @@ SELECT * FROM pg_stat_activity; - список коннектов (connect)
 SELECT count(pid) FROM pg_stat_activity; - число открытых соединений
 SELECT datname, usename, client_addr, client_hostname, state FROM pg_stat_activity;
 
-SELECT usename, datname, client_addr, ssl, version, cipher FROM pg_stat_ssl 
+SELECT usename, datname, client_addr, ssl, version, cipher FROM pg_stat_ssl
 JOIN pg_stat_activity ON pg_stat_ssl.pid = pg_stat_activity.pid;
 
 ## Отключение сессий
@@ -46,7 +48,7 @@ select pg_terminate_backend(pid) from pg_stat_activity where usename='pgsql';
 # Для роли с атрибутом SUPERUSER проверки доступа не выполняются
 CREATE USER <user>;
 ALTER USER <user> WITH PASSWORD '<password>';
-ALTER USER <user> WITH superuser createdb createrole replication bypassrls; 
+ALTER USER <user> WITH superuser createdb createrole replication bypassrls;
 GRANT ALL PRIVILEGES ON DATABASE <db> TO <user>;
 
 Место хранения информации о пользователях. Схема pg_catalog общая на инстанс.
@@ -69,7 +71,7 @@ ALTER DATABASE <db> OWNER TO reptile;
 
 SELECT * FROM information_schema.role_table_grants WHERE grantee='<user>';
 
-## Перенатройка в онлайне
+## Перенастройка в онлайне
 
 ALTER SYSTEM SET wal_level = replica;
 ALTER SYSTEM SET jit = off;
@@ -107,14 +109,14 @@ pg_basebackup -P -R -X stream -c fast -h 78.155.202.229 -U postgres -D ./data
 -X - режим передачи журнала
 
 Создание слота репликации
-SELECT pg_create_physical_replication_slot('<name>'); 
+SELECT pg_create_physical_replication_slot('<name>');
 
 Список существующих слотов репликации. Выводит в том числе логическую репликацию.
-select * from pg_replication_slots; 
+select * from pg_replication_slots;
 
 Отставание слота репликации
 SELECT
-  pg_size_pretty(pg_current_wal_lsn() - restart_lsn) as delay, 
+  pg_size_pretty(pg_current_wal_lsn() - restart_lsn) as delay,
   slot_name
 FROM pg_replication_slots ORDER BY delay DESC;
 
@@ -135,6 +137,8 @@ select * from pg_stat_wal_receiver;
 Необходимо подключение расширений параметром shared_preload_libraries в postgres.conf.
 SELECT * FROM pg_extension;
 SELECT * FROM pg_available_extensions;
+
+CREATE EXTENSION <extension-name> [ WITH SCHEMA <schema-name> ]
 
 ## Блокировки
 
@@ -170,7 +174,7 @@ VALUES (value1, value2, …);
 pg_dump -Fc -d <db> -t cybo.profits_hours > cybo.profits_hours.dump
 pg_dump -Fc -d <db> -t market_data.minutes > market_data.minutes.dump
 pg_dump -h 127.0.0.1 -p 6432 -U <user> -Fd <db> -T log.default_log -T bk.operation -T shops.payments_in -T shops.payments_out -T shops.payment_out_idents -f <db>
-pg_restore -h 172.16.121.8 -U <user> -W -Cc -d <db> -n cybo -t profits_hours -Fc 
+pg_restore -h 172.16.121.8 -U <user> -W -Cc -d <db> -n cybo -t profits_hours -Fc
 
 -O/--no-owner - не восстанавливать владельцев
 
@@ -200,7 +204,7 @@ pg_dump -h 192.168.100.2 -p 6432 -U <user> -O -x -Fc <db> | pg_restore --clean -
 pg_dump -h 192.168.100.2 -p 6432 -U <user> -O -x -Fd "<db>" | pg_restore --clean --if-exist --no-acl --no-owner --verbose -d "<db>" -U <user>
 
 ## Очистка
-### Анализ таблицы и перестройка 
+### Анализ таблицы и перестройка
 VACUUM (VERBOSE, ANALYZE) "log"."error";
 
 vacuum full analyze log.error
@@ -259,13 +263,13 @@ SELECT schemaname,
 FROM
   (SELECT pgt.schemaname AS schemaname,
           pgt.tablename AS tablename,
-          pgstattuple(pgt.schemaname || '.' || pgt.tablename) 
+          pgstattuple(pgt.schemaname || '.' || pgt.tablename)
           AS stats,
           uts.last_autovacuum AS last_autovacuum,
           uts.last_autoanalyze AS last_autoanalyze
    FROM pg_tables AS pgt
-   LEFT JOIN pg_stat_user_tables 
-        AS uts 
+   LEFT JOIN pg_stat_user_tables
+        AS uts
         ON pgt.schemaname = uts.schemaname
    AND pgt.tablename = uts.relname
    WHERE pgt.schemaname NOT IN ('repack','pg_catalog')) AS r

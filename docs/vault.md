@@ -23,6 +23,11 @@ vault kv delete [-versions=3] <engine-name>/mongo/admin
 
 ## PKI (SSL) backend
 
+vault secrets enable -path=<engine-name> pki -max-lease-ttl=87600h
+vault write <engine-name>/root/generate/internal common_name=VaultCA issuer_name=VaultCA ttl=87600h
+curl https://<vault-url>/v1/<engine-name>/ca/pem                    # default issuer certificate
+curl https://<vault-url>/v1/<engine-name>/issuer/<issuer-name>/pem  # <issuer-name> issuer certificate
+
 ## mongo backend
 
 ## policy

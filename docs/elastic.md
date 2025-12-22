@@ -53,7 +53,7 @@ PUT _template/default
 GET /<index>/_mapping
 GET /<index>/<type>/_search
 
-GET /<index>/<type>_search -d 
+GET /<index>/<type>_search -d
 {
   "filter": {
     "range": {
@@ -133,9 +133,9 @@ PUT _ilm/policy/prod_retention
 
 PUT _template/log_prod_template
 {
-  "index_patterns": ["log-prod-*"],                 
+  "index_patterns": ["log-prod-*"],
   "settings": {
-    "index.lifecycle.name": "prod_retention",        
+    "index.lifecycle.name": "prod_retention",
   }
 }
 
@@ -160,7 +160,7 @@ POST _reindex
   "source": {
     "index": "logstash-2019.10.24"
     "query": {
-      "bool": { 
+      "bool": {
         "must_not": {
           "match": {
             "kubernetes.namespace_name": "production"
