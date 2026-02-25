@@ -315,3 +315,8 @@ select pg_reload_conf();
 select name,setting from pg_settings;
 SHOW <param-name>;
 SET <param-name> TO <value>;
+
+## Обслуживание
+
+pg_waldump — вывести журнал предзаписи кластера БД Postgres Pro в понятном человеку виде
+pg_archivecleanup — вычистить файлы архивов WAL Postgres Pro

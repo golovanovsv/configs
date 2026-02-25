@@ -155,7 +155,8 @@ update-alternatives --set python3 /usr/bin/python3.5
 ## Hot add devices
 
 disks:
-  echo "- - -" >> /sys/class/scsi_host/host<number>/scan
+  - echo "- - -" >> /sys/class/scsi_host/host<number>/scan
+  - partprobe /dev/sda
 
 cpu:
   echo 1 > /sys/devices/system/cpu/cpu*/online

@@ -1,6 +1,6 @@
 # acme.sh
 
-## DNS challenge
+## DNS challenge with selectel
 export SL_Key="HvnPe5eZ5UX685e7ycbKyg229_78997"
 acme.sh --issue \
   --dns dns_selectel \
@@ -9,6 +9,13 @@ acme.sh --issue \
   --cert-file /etc/letsencrypt/live/example.com/cert.pem \
   --key-file /etc/letsencrypt/live/example.com/privkey.pem \
   --fullchain-file /etc/letsencrypt/live/example.com/fullchain.pem
+
+## DNS challenge with letsencrypt
+acme.sh --issue \
+  --dns dns_cf \
+  -d '*.example.com' \
+  -d 'example.com' \
+  --server letsencrypt
 
 ## HTTP challenge
 acme.sh --issue \

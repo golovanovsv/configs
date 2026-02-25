@@ -1,4 +1,4 @@
-Одно сообщение записывается в одну партицию. 
+Одно сообщение записывается в одну партицию.
 Сообщения с одинаковыми ключами всегда записывается в одну партицию. Если ключа нету, то RR.
 Каждая партиция реплицируется N-раз (replicas) на разных брокерах.
 У каждой партиции есть leader, которым является один из брокеров, где есть партиция.
@@ -68,6 +68,11 @@ cleanup.policy=<delete|compact>
 cleanup.policy=compact,delete # так тоже можно, работают одновременно
 
 Политика compact вносит изменения только в закрытые сегменты
+
+## kafka metadata
+kafka-broker-api-versions.sh \
+  --bootstrap-server 127.0.0.1:9092 \
+  --command-config client.properties
 
 ## zookeeper
 zookeeper-shell.sh <server>:<port>
