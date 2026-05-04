@@ -11,13 +11,21 @@ openssl dhparam -out /etc/nginx/ssl/dhparam 2048
 ## Create selfsigned CA
 # via csr
 
-openssl genpkey -algorithm ed25519 -out private.key
+openssl genpkey -algorithm ed25519 -out ca.key
 openssl req -new -nodes -key ca.key -out ca.csr
 openssl x509 -req -in ca.csr -signkey ca.key -days 3700 -out ca.crt
 
+```bash
+[ v3_ca ]
+authorityKeyIdentifier=keyid,issuer:always
+basicConstraints=critical,CA:TRUE
+keyUsage=critical,digitalSignature,keyCertSign
+```
+
 # without csr
 
-openssl req -x509 -sha256 -days 3700 -nodes -newkey ed25519:1024 -subj "/CN=Global CA/C=US/L=San Fransisco" -keyout ca.key -out ca.crt
+openssl req -x509 -sha256 -days 3700 -nodes -newkey ed25519:1024 -subj "/CN=Global CA/C=US/L=San Fransisco" -keyout ca.key -out ca.crt \
+  -addext "keyUsage=critical,digitalSignature,keyCertSign"
 
 ## Create selfsigned certificate
 
