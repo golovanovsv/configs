@@ -1,9 +1,3 @@
-## Linux versions
-Ubuntu:
-- xenial = 16.04
-- bionic = 18.04
-- focal = 20.04
-
 ## power mode (governor)
 cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
 for i in {0..63}; do echo "performance" > /sys/devices/system/cpu/cpu${i}/cpufreq/scaling_governor; done
@@ -314,4 +308,10 @@ fio \
   --group_reporting \
   --time_based \
   --runtime=60
+```
+
+## wget
+
+```bash
+wget [--secure-protocol=TLSv1_2] <url>
 ```

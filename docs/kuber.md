@@ -174,3 +174,16 @@ kubectl get csr ${k8suser} -o jsonpath='{.status.certificate}' | base64 -d
 kubectl -n production create secret generic selectel-k8s \
     --from-file=.dockerconfigjson=/home/reptile/.docker/selectel-k8s.json \
     --type=kubernetes.io/dockerconfigjson
+
+## certificate renew
+
+```bash
+# Обновляем сертификаты
+sudo kubeadm certs renew all
+
+# Перезапускаем компоненты control-plane
+sudo kill -9 $(pidof etcd)
+sudo kill -9 $(pidof kube-apiserver)
+sudo kill -9 $(pidof kube-controller-manager)
+sudo kill -9 $(pidof kube-scheduler)
+```
