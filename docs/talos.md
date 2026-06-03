@@ -1,5 +1,16 @@
 # Talos
 
+## Configs
+
+```bash
+# Через внешние секреты
+talosctl gen secrets -o secrets.yaml
+talosctl gen config --with-secrets secrets.yaml <cluster-name> https://<api-endpoint>:6443
+
+# Создать секреты в процессе
+talosctl gen config <cluster-name> https://<api-endpoint>:6443
+```
+
 ## Bootstrap
 
 Вне зависимости от того как был запущен кластер talos требуется ручное действие для бутстрапа кластера `etcd`:
@@ -34,4 +45,40 @@ talosctl --talosconfig talosconfig --nodes 172.16.121.22 apply-config --file <co
 
 Загружаем сервера из шаблона, который или уже есть у вашего облачного провайдера или вы его самостоятельно создаете из образов в [генераторе](https://factory.talos.dev/)
 
+```bash
+openstack image create --private --disk-format qcow2 --file openstack-amd64-v1.13.3.raw --min-ram 2 --min-disk 20 "Talos Linux v1.13.3"
+```
+
 Для передачи конфигурации серверу можно использовать поле `userdata` в API/UI облачного провайдера.
+
+### Cilium
+
+```bash
+cilium install \
+    --set ipam.mode=kubernetes \
+    --set kubeProxyReplacement=true \
+    --set securityContext.capabilities.ciliumAgent="{CHOWN,KILL,NET_ADMIN,NET_RAW,IPC_LOCK,SYS_ADMIN,SYS_RESOURCE,DAC_OVERRIDE,FOWNER,SETGID,SETUID}" \
+    --set securityContext.capabilities.cleanCiliumState="{NET_ADMIN,SYS_ADMIN,SYS_RESOURCE}" \
+    --set cgroup.autoMount.enabled=false \
+    --set cgroup.hostRoot=/sys/fs/cgroup \
+    --set k8sServiceHost=localhost \
+    --set k8sServicePort=7445
+```
+
+## Overlay
+
+```bash
+sda      8:0    0    10G  0 disk
+├─sda1   8:1    0   100M  0 part  # STATE
+├─sda2   8:2    0     1M  0 part  # BIOS
+├─sda3   8:3    0     2G  0 part  # BOOT
+├─sda4   8:4    0     1M  0 part  # META
+└─sda5   8:6    0   7.8G  0 part  # EPHEMERAL
+```
+
+## Debug
+
+```bash
+talosctl --nodes <node> debug <debug-image>
+cd /host
+```
