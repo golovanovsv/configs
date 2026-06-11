@@ -1,11 +1,12 @@
 ## Операции с ключами
-gpg -k            # Список публичных ключей
-gpg -K            # Список приватных ключей
-gpg --fingerprint # Получить отпечаток ключа
-
-gpg --delete-key # удалить ключ
-
-gpg --full-generate-key [--expert]  # Сгенерировать пару ключей
+gpg -k                                          # Список публичных ключей
+gpg -K                                          # Список приватных ключей
+gpg --fingerprint                               # Получить отпечаток ключа
+gpg --allow-secret-key-import --import key.gpg  # Импортировать ключ
+gpg --armor --export <key-id>                   # Экспортировать публичный ключ
+gpg --armor --export-secret-keys <key-id>       # Экспортировать секретный ключ
+gpg --delete-key <key-id>                       # Удалить ключ
+gpg --full-generate-key [--expert]              # Сгенерировать пару ключей
 
 ```bash
 # https://www.gnupg.org/documentation/manuals/gnupg/Unattended-GPG-key-generation.html
@@ -33,10 +34,6 @@ EOF
 - С - подпись ключа
 - E - шифрование
 - A - Авторизация
-
-gpg [--armor/a] --export [-o file]            # экспортировать публичный ключ
-gpg [--armor/a] --export-secret-key [-o file] # экспортировать секретный ключ
-gpg --import                                # импортировать публичный ключ из файла
 
 ## Подпись
 gpg --sign      # подписать сообщение, подпись хранится отдельно

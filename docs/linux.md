@@ -315,3 +315,12 @@ fio \
 ```bash
 wget [--secure-protocol=TLSv1_2] <url>
 ```
+
+## strace
+
+```bash
+strace -ff -e trace=write,read,socket,connect -e signal=none kubectl top no
+strace -ff -e trace=network -e signal=none kubectl top no
+strace -ff -e trace=write,read,socket,connect -e signal='!SIGURG' kubectl top no
+strace -p <running-process-pid>
+```
