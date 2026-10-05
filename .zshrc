@@ -1,11 +1,11 @@
 # Общие параметры
-path=( /bin /sbin /usr/bin /usr/sbin /usr/local/bin /usr/local/sbin \
-       $HOME/.pulumi/bin $HOME/bin .)
+path=(/bin /sbin /usr/bin /usr/sbin /usr/local/bin /usr/local/sbin $HOME/.pulumi/bin $HOME/bin .)
 typeset -U path
 umask 022
 
 # Автозагрузка
 autoload -U compinit && compinit
+autoload -U bashcominit && bashcompinit
 autoload -U colors && colors
 
 # Получение фактов
@@ -160,7 +160,7 @@ if [[ $(ip --color &> /dev/null) -eq 0 ]]; then
 fi
 
 # Бинари
-if [[ -f /bin/kubectl || -f /usr/bin/kubectl ]]; then
+if type -p kubectl >/dev/null; then
     source <(kubectl completion zsh);
     # Игнорируем часть команд в автодополнении
     zstyle ':completion:*' ignored-patterns 'kubeadm|kubelet|kubernetes-scripts';
@@ -168,7 +168,7 @@ if [[ -f /bin/kubectl || -f /usr/bin/kubectl ]]; then
     # export KUBECONFIG=
 fi
 
-if [[ -f /bin/docker ]]; then
+if type -p docker >/dev/null; then
     source <(docker completion zsh)
     # Игнорируем часть команд в автодополнении
     zstyle ':completion:*' ignored-patterns 'docker-proxy|dockerd|docutils';
@@ -177,21 +177,21 @@ if [[ -f /bin/docker ]]; then
     export BUILDKIT_PROGRESS=plain
 fi
 
-if [[ -f /bin/helm || -f /usr/bin/helm ]]; then
+if type -p helm >/dev/null; then
     source <(helm completion zsh)
 fi
 
-if [[ -f /usr/bin/helmfile || -f /bin/helmfile ]]; then
+if type -p helmfile >/dev/null; then
     source <(helmfile completion zsh)
     # Переменные среды для helmfile
     export HELM_DIFF_USE_UPGRADE_DRY_RUN=true
 fi
 
-if [[ -f /usr/bin/bat ]]; then
-    alias cat="/usr/bin/bat -n"
+if type -p bat >/dev/null; then
+    alias cat="bat -n"
 fi
 
-if [[ -f /bin/jq || /usr/bin/jq ]]; then
+if type -p jq >/dev/null; then
     # - color for `null`
     # - color for `false`
     # - color for `true`
@@ -200,6 +200,14 @@ if [[ -f /bin/jq || /usr/bin/jq ]]; then
     # - color for arrays
     # - color for objects
     export JQ_COLORS="1;31:1;31:1;32:1;33:1;36:1;36:1;36"
+fi
+
+if type -p boundary >/dev/null; then
+    complete -o nospace -C boundary boundary
+fi
+
+if type -p vault >/dev/null; then
+    complete -o nospace -C vault vault
 fi
 
 # Локальные переменные
