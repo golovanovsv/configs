@@ -171,7 +171,7 @@ fi
 if type -p docker >/dev/null; then
     source <(docker completion zsh)
     # Игнорируем часть команд в автодополнении
-    zstyle ':completion:*' ignored-patterns 'docker-proxy|dockerd|docutils';
+    zstyle ':completion:*' ignored-patterns 'docker-proxy|dockerd|docutils|kubectl-*';
     # Переменные среды для docker
     export DOCKER_BUILDKIT=1
     export BUILDKIT_PROGRESS=plain
