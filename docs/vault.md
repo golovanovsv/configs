@@ -2,52 +2,64 @@
 
 ## login
 
+```bash
 export VAULT_ADDR=<https>
 vault login -method=ldap username=reptile  # Токен сохраняется в ~/.vault-token
+vault token renew -increment=8h
+```
+
+## tokens
+
+```bash
+vault token create -policy=<policy name>
+```
 
 ## secrets (v2) engine
 
+```bash
 vault kv list <engine-name>
-
 vault kv get [-field=kubeconfig] <engine-name>/k8s
-
 vault kv put <engine-name>/mongo/admin \
   username=admin \
-  password=password
+  password=password\
+  config=@<path-to-config>
 
 vault kv patch <engine-name>/mongo/admin newuser=newpassword
-
 vault kv metadata get <engine-name>/mongo/admin
-
 vault kv delete [-versions=3] <engine-name>/mongo/admin
+```
 
 ## PKI (SSL) backend
 
+```bash
+# vault
 vault secrets enable -path=<engine-name> pki -max-lease-ttl=87600h
 vault write <engine-name>/root/generate/internal common_name=VaultCA issuer_name=VaultCA ttl=87600h
+
+# curl
 curl https://<vault-url>/v1/<engine-name>/ca/pem                    # default issuer certificate
 curl https://<vault-url>/v1/<engine-name>/issuer/<issuer-name>/pem  # <issuer-name> issuer certificate
+```
 
 ## mongo backend
 
 ## policy
 
+```text
 path "test/db"{
     capabilities = ["read"]
 }
-
-## tokens
-
-vault token create -policy=<policy name>
+```
 
 ## ansible
 
-Плагин (?) ansible-vault
-
+```ansible
 {{ lookup('vault', 'test/db/mongo/users).username }}
+```
 
 ## terraform
 
+```hcl
 data "vault_generic_secret" "mongo" {
   path = "test/db/mongo/users"
 }
@@ -55,14 +67,19 @@ data "vault_generic_secret" "mongo" {
 resource "aws_ec2_instance" "server" {
   location = ${data.vault_generic_secret.mongo.data["username"]}
 }
+```
 
 ## python
 
+```python
 import hvac
 client = hvac.Client(url=os.getenv("VAULT_ADDR"),token=os.getenv("VAULT_TOKEN"))
 secret = client.read("test/db/mongo/users")
+```
 
-bash```
+## config
+
+```bash
 {
   "backend": {
     "etcd": {
